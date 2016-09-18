@@ -12,8 +12,6 @@ class Central {
         list<Central*> destinations;
 
         bool visited;
-        bool isPresentInTheOther;
-        Central():isPresentInTheOther(false) {};
 };
 
 list<Central*> buildGraph();
@@ -33,79 +31,63 @@ int main() {
     return 0;
 }
 
-void remove(Central* font, Central* destiny, list<Central*> oldBlueprint) {
-    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
-        Central* central = *it;
-        if(central->origin.compare(font->origin) == 0 ||
-            central->origin.compare(destiny->origin) == 0) {
-            
-            for (list<Central*>::iterator it2 = central->destinations.begin(); it2 != central->destinations.end(); it2++) {
-                Central* central2 = *it2;
-                if(central2->origin.compare(font->origin) == 0 ||
-                        central2->origin.compare(destiny->origin) == 0) {
-                    central->destinations.erase(it2);
-                }
-            }
+Central* find(list<Central*> graph, string searched) {
+    for (list<Central*>::iterator it = graph.begin(); it != graph.end();  it++) {
+        Central* vertex = *it;
+        if(searched.compare(vertex->origin) == 0) {
+            return vertex;
         }
     }
+    return NULL;
 }
 
-void depthSearchVisit(Central* font, Central* vertex, list<Central*> oldBlueprint) {
+bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny, 
+                                                list<Central*> oldBlueprint) {
     vertex->visited = true;
-
-for (list<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end(); it++) {
+    for (list<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end();  it++) {
         Central* adjacentVertex = *it;
         if(!adjacentVertex->visited) {
-            if(adjacentVertex->isPresentInTheOther) {
-                remove(font, vertex, oldBlueprint);
-            } else {
-                depthSearchVisit(font, adjacentVertex, oldBlueprint);
+            
+            if(adjacentVertex->origin.compare(destiny) == 0) {
+                return true;
             }
-        }
-    }
-}
 
-bool checkVertexes(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
-    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
-        Central* oldCentral = *it;
-        bool found = false;
-        for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
-            Central* newCentral = *it2;
-            if(newCentral->origin.compare(oldCentral->origin) == 0) {
-                newCentral->isPresentInTheOther = true;
-                found = true;
-                break;
+            if(find(oldBlueprint, adjacentVertex->origin)) {
+                continue;
+            }
+
+            bool result = isThereAPathWithOnlyNewCentrals(adjacentVertex, destiny, oldBlueprint);
+            if(result) {
+                return true;
             }
         }
-        if(!found) {
-            return false;
-        }
     }
-    return true;
+    return false;
 }
 
 bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
-    checkVertexes(oldBlueprint, newBlueprint);
+    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end();  it++) {
+        Central* oldOrigin = *it;
+        Central* newOrigin = find(newBlueprint, oldOrigin->origin);
 
-    for (list<Central*>::iterator it = newBlueprint.begin(); it != newBlueprint.end(); it++) {
-        Central* vertex = *it;
-
-        for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
-                Central* v = *it2;
-                v->visited = false;
-        }
-        if(vertex->isPresentInTheOther) {
-            depthSearchVisit(vertex, vertex, oldBlueprint);
-        }
-    }
-
-    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
-        Central* vertex = *it;
-        if(vertex->destinations.size() > 0) {
+        if(newOrigin == NULL) {
             return false;
         }
-    }
 
+        for (list<Central*>::iterator it2 = oldOrigin->destinations.begin(); it2 != oldOrigin->destinations.end();  it2++) {
+            Central* oldDestiny = *it2;
+
+            for (list<Central*>::iterator it3 = newBlueprint.begin(); it3 != newBlueprint.end();  it3++) {
+                Central* v = *it3;
+                v->visited = false;
+            }
+            bool isCorrectPathThere = isThereAPathWithOnlyNewCentrals(newOrigin, 
+                                        oldDestiny->origin, oldBlueprint);
+            if(!isCorrectPathThere) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -120,7 +102,7 @@ list<Central*> buildGraph() {
         cin >> vertex1 >> vertex2;
 
         Central *central1 = NULL, *central2 = NULL;
-        for (list<Central*>::iterator it = graph.begin(); it != graph.end(); it++) {
+        for (list<Central*>::iterator it = graph.begin(); it != graph.end();  it++) {
             Central* central = *it;
 
             if(central->origin.compare(vertex1) == 0) {
