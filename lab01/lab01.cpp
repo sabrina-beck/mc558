@@ -3,25 +3,39 @@
 #include <stdlib.h>
 using namespace std;
 
+typedef enum { WHITE, GREY, BLACK } Color;
+
 class Central;
 class Central {
     public:
         string origin;
         vector<Central*> destinations;
+
+        bool visited;
 };
+
 vector<Central*> buildGraph();
 void printGraph(vector<Central*> graph);
+bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprint);
 
 int main() {
     vector<Central*> oldBlueprint = buildGraph();
     vector<Central*> newBlueprint = buildGraph();
 
-    cout << "\nFINISH READING\n";
-    cout << "\n------------------------\n";
+    //cout << "\nFINISH READING\n";
+    //cout << "\n------------------------\n";
 
-    printGraph(oldBlueprint);
-    cout << "\n------------------\n";
-    printGraph(newBlueprint);
+    //printGraph(oldBlueprint);
+    //cout << "\n------------------\n";
+    //printGraph(newBlueprint);
+
+    bool yes = areFromSameCity(oldBlueprint, newBlueprint);
+    if(yes) {
+        cout << "SIM";
+    } else {
+        cout << "NAO";
+    }
+
     return 0;
 }
 
@@ -41,6 +55,66 @@ void printGraph(vector<Central*> graph) {
         cout << "      childs: " << c->destinations.size() << "\n";
         printVector(c->destinations);
     }    
+}
+
+Central* find(vector<Central*> graph, string searched) {
+    for (int k = 0; k < graph.size(); k++) {
+        Central* vertex = graph.at(k);
+        if(searched.compare(vertex->origin) == 0) {
+            return vertex;
+        }
+    }
+    return NULL;
+}
+
+bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny, 
+                                                vector<Central*> oldBlueprint) {
+    vertex->visited = true;
+    for(int i = 0; i < vertex->destinations.size(); i++) {
+        Central* adjacentVertex = vertex->destinations.at(i);
+        if(!adjacentVertex->visited) {
+            
+            if(adjacentVertex->origin.compare(destiny) == 0) {
+                return true;
+            }
+
+            if(find(oldBlueprint, adjacentVertex->origin)) {
+                continue;
+            }
+
+            bool result = isThereAPathWithOnlyNewCentrals(adjacentVertex, destiny, oldBlueprint);
+            if(result) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprint) {
+    for(int i = 0; i < oldBlueprint.size(); i++) {
+        Central* oldOrigin = oldBlueprint.at(i);
+        Central* newOrigin = find(newBlueprint, oldOrigin->origin);
+
+        if(newOrigin == NULL) {
+            return false;
+        }
+
+        for(int j = 0; j < oldOrigin->destinations.size(); j++) {
+            Central* oldDestiny = oldOrigin->destinations.at(j);
+
+            for (int h = 0; h < newBlueprint.size(); h++)
+            {
+                newBlueprint.at(h)->visited = false;
+            }
+            bool isCorrectPathThere = isThereAPathWithOnlyNewCentrals(newOrigin, 
+                                        oldDestiny->origin, oldBlueprint);
+            if(!isCorrectPathThere) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 vector<Central*> buildGraph() {
