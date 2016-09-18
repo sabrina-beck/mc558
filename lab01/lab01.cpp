@@ -54,12 +54,13 @@ void remove(Central* font, Central* destiny, list<Central*> oldBlueprint) {
         Central* central = *it;
         if(central->origin.compare(font->origin) == 0 ||
             central->origin.compare(destiny->origin) == 0) {
-            
-            for (list<Central*>::iterator it2 = central->destinations.begin(); it2 != central->destinations.end(); it2++) {
+            for (list<Central*>::iterator it2 = central->destinations.begin(); it2 != central->destinations.end();) {
                 Central* central2 = *it2;
                 if(central2->origin.compare(font->origin) == 0 ||
                         central2->origin.compare(destiny->origin) == 0) {
-                    central->destinations.erase(it2);
+                    it2 = central->destinations.erase(it2);
+                } else {
+                    it2++;
                 }
             }
         }
@@ -69,11 +70,11 @@ void remove(Central* font, Central* destiny, list<Central*> oldBlueprint) {
 void depthSearchVisit(Central* font, Central* vertex, list<Central*> oldBlueprint) {
     vertex->visited = true;
 
-for (list<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end(); it++) {
+    for (list<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end(); it++) {
         Central* adjacentVertex = *it;
         if(!adjacentVertex->visited) {
             if(adjacentVertex->isPresentInTheOther) {
-                remove(font, vertex, oldBlueprint);
+                remove(font, adjacentVertex, oldBlueprint);
             } else {
                 depthSearchVisit(font, adjacentVertex, oldBlueprint);
             }
@@ -87,6 +88,7 @@ bool checkVertexes(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
         bool found = false;
         for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
             Central* newCentral = *it2;
+
             if(newCentral->origin.compare(oldCentral->origin) == 0) {
                 newCentral->isPresentInTheOther = true;
                 found = true;
