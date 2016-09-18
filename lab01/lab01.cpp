@@ -19,22 +19,6 @@ class Central {
 list<Central*> buildGraph();
 bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint);
 
-//void printVector(list<Central*> dest) {
-//    cout << "      ";
-//    for (list<Central*>::iterator it = dest.begin(); it != dest.end(); it++) {
-//        Central* d = *iterator;
-//        cout << d->origin << "  |  ";
-//    }
-//    cout << "\n";
-//}
-//
-//void printGraph(list<Central*> graph) {
-//    for (list<Central*>::iterator it = graph.begin(); it != graph.end(); it++) {
-//        Central* c = *iterator;
-//        printVector(c->destinations);
-//    }    
-//}
-
 int main() {
     list<Central*> oldBlueprint = buildGraph();
     list<Central*> newBlueprint = buildGraph();
@@ -122,11 +106,11 @@ bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
     for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
         Central* vertex = *it;
         if(vertex->destinations.size() > 0) {
-            return true;
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 list<Central*> buildGraph() {
