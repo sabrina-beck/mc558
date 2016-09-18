@@ -8,8 +8,8 @@ typedef enum { WHITE, GREY, BLACK } Color;
 class Vertex;
 class Vertex {
     public:
-        string origin;
-        list<Vertex*> destinations;
+        string name;
+        list<Vertex*> adjacents;
 
         bool visited;
         bool isPresentInTheOther;
@@ -36,13 +36,13 @@ int main() {
 void remove(Vertex* font, Vertex* destiny, list<Vertex*> oldBlueprint) {
     for (list<Vertex*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
         Vertex* vertex = *it;
-        if(vertex->origin.compare(font->origin) == 0 ||
-            vertex->origin.compare(destiny->origin) == 0) {
-            for (list<Vertex*>::iterator it2 = vertex->destinations.begin(); it2 != vertex->destinations.end();) {
+        if(vertex->name.compare(font->name) == 0 ||
+            vertex->name.compare(destiny->name) == 0) {
+            for (list<Vertex*>::iterator it2 = vertex->adjacents.begin(); it2 != vertex->adjacents.end();) {
                 Vertex* vertex2 = *it2;
-                if(vertex2->origin.compare(font->origin) == 0 ||
-                        vertex2->origin.compare(destiny->origin) == 0) {
-                    it2 = vertex->destinations.erase(it2);
+                if(vertex2->name.compare(font->name) == 0 ||
+                        vertex2->name.compare(destiny->name) == 0) {
+                    it2 = vertex->adjacents.erase(it2);
                 } else {
                     it2++;
                 }
@@ -54,7 +54,7 @@ void remove(Vertex* font, Vertex* destiny, list<Vertex*> oldBlueprint) {
 void depthSearchVisit(Vertex* font, Vertex* vertex, list<Vertex*> oldBlueprint) {
     vertex->visited = true;
 
-    for (list<Vertex*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end(); it++) {
+    for (list<Vertex*>::iterator it = vertex->adjacents.begin(); it != vertex->adjacents.end(); it++) {
         Vertex* adjacentVertex = *it;
         if(!adjacentVertex->visited) {
             if(adjacentVertex->isPresentInTheOther) {
@@ -73,7 +73,7 @@ bool checkVertexes(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint) {
         for (list<Vertex*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
             Vertex* newVertex = *it2;
 
-            if(newVertex->origin.compare(oldVertex->origin) == 0) {
+            if(newVertex->name.compare(oldVertex->name) == 0) {
                 newVertex->isPresentInTheOther = true;
                 found = true;
                 break;
@@ -105,7 +105,7 @@ bool areFromSameCity(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint) {
 
     for (list<Vertex*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
         Vertex* vertex = *it;
-        if(vertex->destinations.size() > 0) {
+        if(vertex->adjacents.size() > 0) {
             return false;
         }
     }
@@ -127,11 +127,11 @@ list<Vertex*> buildGraph() {
         for (list<Vertex*>::iterator it = graph.begin(); it != graph.end(); it++) {
             Vertex* vertex = *it;
 
-            if(vertex->origin.compare(input1) == 0) {
+            if(vertex->name.compare(input1) == 0) {
                 vertex1 = vertex;
             }
 
-            if(vertex->origin.compare(input2) == 0) {
+            if(vertex->name.compare(input2) == 0) {
                 vertex2 = vertex;
             }
 
@@ -142,18 +142,18 @@ list<Vertex*> buildGraph() {
 
         if(vertex1 == NULL) {
             vertex1 = new Vertex();
-            vertex1->origin = input1;
+            vertex1->name = input1;
             graph.push_back(vertex1);
         }
 
         if(vertex2 == NULL) {
             vertex2 = new Vertex();
-            vertex2->origin = input2;
+            vertex2->name = input2;
             graph.push_back(vertex2);
         }
 
-        vertex1->destinations.push_back(vertex2);
-        vertex2->destinations.push_back(vertex1);
+        vertex1->adjacents.push_back(vertex2);
+        vertex2->adjacents.push_back(vertex1);
     }
 
     return graph;
