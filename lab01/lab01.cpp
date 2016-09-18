@@ -5,21 +5,21 @@ using namespace std;
 
 typedef enum { WHITE, GREY, BLACK } Color;
 
-class Central;
-class Central {
+class Vertex;
+class Vertex {
     public:
         string origin;
-        list<Central*> destinations;
+        list<Vertex*> destinations;
 
         bool visited;
 };
 
-list<Central*> buildGraph();
-bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint);
+list<Vertex*> buildGraph();
+bool areFromSameCity(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint);
 
 int main() {
-    list<Central*> oldBlueprint = buildGraph();
-    list<Central*> newBlueprint = buildGraph();
+    list<Vertex*> oldBlueprint = buildGraph();
+    list<Vertex*> newBlueprint = buildGraph();
 
     bool yes = areFromSameCity(oldBlueprint, newBlueprint);
     if(yes) {
@@ -31,9 +31,9 @@ int main() {
     return 0;
 }
 
-Central* find(list<Central*> graph, string searched) {
-    for (list<Central*>::iterator it = graph.begin(); it != graph.end();  it++) {
-        Central* vertex = *it;
+Vertex* find(list<Vertex*> graph, string searched) {
+    for (list<Vertex*>::iterator it = graph.begin(); it != graph.end();  it++) {
+        Vertex* vertex = *it;
         if(searched.compare(vertex->origin) == 0) {
             return vertex;
         }
@@ -41,11 +41,11 @@ Central* find(list<Central*> graph, string searched) {
     return NULL;
 }
 
-bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny, 
-                                                list<Central*> oldBlueprint) {
+bool isThereAPathWithOnlyNewCentrals(Vertex* vertex, string destiny, 
+                                                list<Vertex*> oldBlueprint) {
     vertex->visited = true;
-    for (list<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end();  it++) {
-        Central* adjacentVertex = *it;
+    for (list<Vertex*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end();  it++) {
+        Vertex* adjacentVertex = *it;
         if(!adjacentVertex->visited) {
             
             if(adjacentVertex->origin.compare(destiny) == 0) {
@@ -65,20 +65,20 @@ bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny,
     return false;
 }
 
-bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
-    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end();  it++) {
-        Central* oldOrigin = *it;
-        Central* newOrigin = find(newBlueprint, oldOrigin->origin);
+bool areFromSameCity(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint) {
+    for (list<Vertex*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end();  it++) {
+        Vertex* oldOrigin = *it;
+        Vertex* newOrigin = find(newBlueprint, oldOrigin->origin);
 
         if(newOrigin == NULL) {
             return false;
         }
 
-        for (list<Central*>::iterator it2 = oldOrigin->destinations.begin(); it2 != oldOrigin->destinations.end();  it2++) {
-            Central* oldDestiny = *it2;
+        for (list<Vertex*>::iterator it2 = oldOrigin->destinations.begin(); it2 != oldOrigin->destinations.end();  it2++) {
+            Vertex* oldDestiny = *it2;
 
-            for (list<Central*>::iterator it3 = newBlueprint.begin(); it3 != newBlueprint.end();  it3++) {
-                Central* v = *it3;
+            for (list<Vertex*>::iterator it3 = newBlueprint.begin(); it3 != newBlueprint.end();  it3++) {
+                Vertex* v = *it3;
                 v->visited = false;
             }
             bool isCorrectPathThere = isThereAPathWithOnlyNewCentrals(newOrigin, 
@@ -91,8 +91,8 @@ bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
     return true;
 }
 
-list<Central*> buildGraph() {
-    list<Central*> graph;
+list<Vertex*> buildGraph() {
+    list<Vertex*> graph;
     
     unsigned int m1;
     cin >> m1;
@@ -101,9 +101,9 @@ list<Central*> buildGraph() {
         string vertex1, vertex2;
         cin >> vertex1 >> vertex2;
 
-        Central *central1 = NULL, *central2 = NULL;
-        for (list<Central*>::iterator it = graph.begin(); it != graph.end();  it++) {
-            Central* central = *it;
+        Vertex *central1 = NULL, *central2 = NULL;
+        for (list<Vertex*>::iterator it = graph.begin(); it != graph.end();  it++) {
+            Vertex* central = *it;
 
             if(central->origin.compare(vertex1) == 0) {
                 central1 = central;
@@ -119,13 +119,13 @@ list<Central*> buildGraph() {
         }
 
         if(central1 == NULL) {
-            central1 = new Central();
+            central1 = new Vertex();
             central1->origin = vertex1;
             graph.push_back(central1);
         }
 
         if(central2 == NULL) {
-            central2 = new Central();
+            central2 = new Vertex();
             central2->origin = vertex2;
             graph.push_back(central2);
         }
