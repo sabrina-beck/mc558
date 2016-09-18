@@ -34,15 +34,16 @@ int main() {
 }
 
 void remove(Central* font, Central* destiny, vector<Central*> oldBlueprint) {
-    for (unsigned int i = 0; i < oldBlueprint.size(); i++) {
-        Central* central = oldBlueprint.at(i);
+    for (vector<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
+        Central* central = *it;
         if(central->origin.compare(font->origin) == 0 ||
             central->origin.compare(destiny->origin) == 0) {
-            for (unsigned int j = 0; j < central->destinations.size(); j++){
-                Central* central2 = central->destinations.at(j);
+            
+            for (vector<Central*>::iterator it2 = central->destinations.begin(); it2 != central->destinations.end(); it2++) {
+                Central* central2 = *it2;
                 if(central2->origin.compare(font->origin) == 0 ||
                         central2->origin.compare(destiny->origin) == 0) {
-                    central->destinations.erase(central->destinations.begin() + j);
+                    central->destinations.erase(it2);
                 }
             }
         }
@@ -52,8 +53,8 @@ void remove(Central* font, Central* destiny, vector<Central*> oldBlueprint) {
 void depthSearchVisit(Central* font, Central* vertex, vector<Central*> oldBlueprint) {
     vertex->visited = true;
 
-    for(unsigned int i = 0; i < vertex->destinations.size(); i++) {
-        Central* adjacentVertex = vertex->destinations.at(i);
+for (vector<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end(); it++) {
+        Central* adjacentVertex = *it;
         if(!adjacentVertex->visited) {
             if(adjacentVertex->isPresentInTheOther) {
                 remove(font, vertex, oldBlueprint);
@@ -65,11 +66,11 @@ void depthSearchVisit(Central* font, Central* vertex, vector<Central*> oldBluepr
 }
 
 bool checkVertexes(vector<Central*> oldBlueprint, vector<Central*> newBlueprint) {
-    for(unsigned int i = 0; i < oldBlueprint.size(); i++) {
-        Central* oldCentral = oldBlueprint.at(i);
+    for (vector<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
+        Central* oldCentral = *it;
         bool found = false;
-        for(unsigned int j = 0; j < newBlueprint.size(); j++) {
-            Central* newCentral = oldBlueprint.at(i);
+        for (vector<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
+            Central* newCentral = *it2;
             if(newCentral->origin.compare(oldCentral->origin) == 0) {
                 newCentral->isPresentInTheOther = true;
                 found = true;
@@ -86,16 +87,25 @@ bool checkVertexes(vector<Central*> oldBlueprint, vector<Central*> newBlueprint)
 bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprint) {
     checkVertexes(oldBlueprint, newBlueprint);
 
-    for(unsigned int i = 0; i < newBlueprint.size(); i++) {
-        Central* vertex = newBlueprint.at(i);
+    for (vector<Central*>::iterator it = newBlueprint.begin(); it != newBlueprint.end(); it++) {
+        Central* vertex = *it;
 
-        for (unsigned int h = 0; h < newBlueprint.size(); h++) {
-                newBlueprint.at(h)->visited = false;
+        for (vector<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
+                Central* v = *it2;
+                v->visited = false;
         }
         if(vertex->isPresentInTheOther) {
             depthSearchVisit(vertex, vertex, oldBlueprint);
         }
     }
+
+    for (vector<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
+        Central* vertex = *it;
+        if(vertex->destinations.size() > 0) {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -110,8 +120,8 @@ vector<Central*> buildGraph() {
         cin >> vertex1 >> vertex2;
 
         Central *central1 = NULL, *central2 = NULL;
-        for (unsigned int i = 0; i < graph.size(); i++) {
-            Central* central = graph.at(i);
+        for (vector<Central*>::iterator it = graph.begin(); it != graph.end(); it++) {
+            Central* central = *it;
 
             if(central->origin.compare(vertex1) == 0) {
                 central1 = central;
