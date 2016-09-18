@@ -108,11 +108,11 @@ bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
     for (list<Central*>::iterator it = newBlueprint.begin(); it != newBlueprint.end(); it++) {
         Central* vertex = *it;
 
-        for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
-                Central* v = *it2;
-                v->visited = false;
-        }
         if(vertex->isPresentInTheOther) {
+            for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
+                    Central* v = *it2;
+                    v->visited = false;
+            }
             depthSearchVisit(vertex, vertex, oldBlueprint);
         }
     }
