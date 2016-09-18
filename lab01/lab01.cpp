@@ -5,21 +5,39 @@ using namespace std;
 
 typedef enum { WHITE, GREY, BLACK } Color;
 
-class Vertex;
-class Vertex {
+class Central;
+class Central {
     public:
-        string name;
-        list<Vertex*> adjacents;
+        string origin;
+        list<Central*> destinations;
 
         bool visited;
+        bool isPresentInTheOther;
+        Central():isPresentInTheOther(false) {};
 };
 
-list<Vertex*> buildGraph();
-bool areFromSameCity(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint);
+list<Central*> buildGraph();
+bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint);
+
+//void printVector(list<Central*> dest) {
+//    cout << "      ";
+//    for (list<Central*>::iterator it = dest.begin(); it != dest.end(); it++) {
+//        Central* d = *iterator;
+//        cout << d->origin << "  |  ";
+//    }
+//    cout << "\n";
+//}
+//
+//void printGraph(list<Central*> graph) {
+//    for (list<Central*>::iterator it = graph.begin(); it != graph.end(); it++) {
+//        Central* c = *iterator;
+//        printVector(c->destinations);
+//    }    
+//}
 
 int main() {
-    list<Vertex*> oldBlueprint = buildGraph();
-    list<Vertex*> newBlueprint = buildGraph();
+    list<Central*> oldBlueprint = buildGraph();
+    list<Central*> newBlueprint = buildGraph();
 
     bool yes = areFromSameCity(oldBlueprint, newBlueprint);
     if(yes) {
@@ -31,67 +49,84 @@ int main() {
     return 0;
 }
 
-Vertex* find(list<Vertex*> graph, string searched) {
-    for (list<Vertex*>::iterator it = graph.begin(); it != graph.end();  it++) {
-        Vertex* vertex = *it;
-        if(searched.compare(vertex->name) == 0) {
-            return vertex;
+void remove(Central* font, Central* destiny, list<Central*> oldBlueprint) {
+    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
+        Central* central = *it;
+        if(central->origin.compare(font->origin) == 0 ||
+            central->origin.compare(destiny->origin) == 0) {
+            
+            for (list<Central*>::iterator it2 = central->destinations.begin(); it2 != central->destinations.end(); it2++) {
+                Central* central2 = *it2;
+                if(central2->origin.compare(font->origin) == 0 ||
+                        central2->origin.compare(destiny->origin) == 0) {
+                    central->destinations.erase(it2);
+                }
+            }
         }
     }
-    return NULL;
 }
 
-bool isThereAPathWithOnlyNewVertexes(Vertex* vertex, string destiny, 
-                                                list<Vertex*> oldBlueprint) {
+void depthSearchVisit(Central* font, Central* vertex, list<Central*> oldBlueprint) {
     vertex->visited = true;
-    for (list<Vertex*>::iterator it = vertex->adjacents.begin(); it != vertex->adjacents.end();  it++) {
-        Vertex* adjacentVertex = *it;
+
+for (list<Central*>::iterator it = vertex->destinations.begin(); it != vertex->destinations.end(); it++) {
+        Central* adjacentVertex = *it;
         if(!adjacentVertex->visited) {
-            if(adjacentVertex->name.compare(destiny) == 0) {
-                return true;
-            }
-
-            if(find(oldBlueprint, adjacentVertex->name)) {
-                continue;
-            }
-
-            bool result = isThereAPathWithOnlyNewVertexes(adjacentVertex, destiny, oldBlueprint);
-            if(result) {
-                return true;
+            if(adjacentVertex->isPresentInTheOther) {
+                remove(font, vertex, oldBlueprint);
+            } else {
+                depthSearchVisit(font, adjacentVertex, oldBlueprint);
             }
         }
     }
-    return false;
 }
 
-bool areFromSameCity(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint) {
-    for (list<Vertex*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end();  it++) {
-        Vertex* oldVertexFont = *it;
-        Vertex* newVertexFont = find(newBlueprint, oldVertexFont->name);
-
-        if(newVertexFont == NULL) {
-            return false;
+bool checkVertexes(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
+    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
+        Central* oldCentral = *it;
+        bool found = false;
+        for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
+            Central* newCentral = *it2;
+            if(newCentral->origin.compare(oldCentral->origin) == 0) {
+                newCentral->isPresentInTheOther = true;
+                found = true;
+                break;
+            }
         }
-
-        for (list<Vertex*>::iterator it2 = oldVertexFont->adjacents.begin(); it2 != oldVertexFont->adjacents.end();  it2++) {
-            Vertex* oldVertexDestiny = *it2;
-
-            for (list<Vertex*>::iterator it3 = newBlueprint.begin(); it3 != newBlueprint.end();  it3++) {
-                Vertex* v = *it3;
-                v->visited = false;
-            }
-            bool isCorrectPathThere = isThereAPathWithOnlyNewVertexes(newVertexFont, 
-                                        oldVertexDestiny->name, oldBlueprint);
-            if(!isCorrectPathThere) {
-                return false;
-            }
+        if(!found) {
+            return false;
         }
     }
     return true;
 }
 
-list<Vertex*> buildGraph() {
-    list<Vertex*> graph;
+bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
+    checkVertexes(oldBlueprint, newBlueprint);
+
+    for (list<Central*>::iterator it = newBlueprint.begin(); it != newBlueprint.end(); it++) {
+        Central* vertex = *it;
+
+        for (list<Central*>::iterator it2 = newBlueprint.begin(); it2 != newBlueprint.end(); it2++) {
+                Central* v = *it2;
+                v->visited = false;
+        }
+        if(vertex->isPresentInTheOther) {
+            depthSearchVisit(vertex, vertex, oldBlueprint);
+        }
+    }
+
+    for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
+        Central* vertex = *it;
+        if(vertex->destinations.size() > 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+list<Central*> buildGraph() {
+    list<Central*> graph;
     
     unsigned int m1;
     cin >> m1;
@@ -100,37 +135,37 @@ list<Vertex*> buildGraph() {
         string vertex1, vertex2;
         cin >> vertex1 >> vertex2;
 
-        Vertex *vertexFont = NULL, *vertexDestiny = NULL;
-        for (list<Vertex*>::iterator it = graph.begin(); it != graph.end();  it++) {
-            Vertex* vertex = *it;
+        Central *central1 = NULL, *central2 = NULL;
+        for (list<Central*>::iterator it = graph.begin(); it != graph.end(); it++) {
+            Central* central = *it;
 
-            if(vertex->name.compare(vertex1) == 0) {
-                vertexFont = vertex;
+            if(central->origin.compare(vertex1) == 0) {
+                central1 = central;
             }
 
-            if(vertex->name.compare(vertex2) == 0) {
-                vertexDestiny = vertex;
+            if(central->origin.compare(vertex2) == 0) {
+                central2 = central;
             }
 
-            if(vertexFont != NULL && vertexDestiny != NULL) {
+            if(central1 != NULL && central2 != NULL) {
                 break;
             }
         }
 
-        if(vertexFont == NULL) {
-            vertexFont = new Vertex();
-            vertexFont->name = vertex1;
-            graph.push_back(vertexFont);
+        if(central1 == NULL) {
+            central1 = new Central();
+            central1->origin = vertex1;
+            graph.push_back(central1);
         }
 
-        if(vertexDestiny == NULL) {
-            vertexDestiny = new Vertex();
-            vertexDestiny->name = vertex2;
-            graph.push_back(vertexDestiny);
+        if(central2 == NULL) {
+            central2 = new Central();
+            central2->origin = vertex2;
+            graph.push_back(central2);
         }
 
-        vertexFont->adjacents.push_back(vertexDestiny);
-        vertexDestiny->adjacents.push_back(vertexFont);
+        central1->destinations.push_back(central2);
+        central2->destinations.push_back(central1);
     }
 
     return graph;
