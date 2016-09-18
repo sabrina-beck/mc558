@@ -120,11 +120,11 @@ bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
     for (list<Central*>::iterator it = oldBlueprint.begin(); it != oldBlueprint.end(); it++) {
         Central* vertex = *it;
         if(vertex->destinations.size() > 0) {
-            return false;
+            return true;
         }
     }
 
-    return true;
+    return false;
 }
 
 list<Central*> buildGraph() {
