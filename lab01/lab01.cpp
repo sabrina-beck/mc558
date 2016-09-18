@@ -101,7 +101,9 @@ bool checkVertexes(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
 }
 
 bool areFromSameCity(list<Central*> oldBlueprint, list<Central*> newBlueprint) {
-    checkVertexes(oldBlueprint, newBlueprint);
+    if(!checkVertexes(oldBlueprint, newBlueprint)) {
+        return false;
+    }
 
     for (list<Central*>::iterator it = newBlueprint.begin(); it != newBlueprint.end(); it++) {
         Central* vertex = *it;
