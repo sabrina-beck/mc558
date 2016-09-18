@@ -22,18 +22,11 @@ int main() {
     vector<Central*> oldBlueprint = buildGraph();
     vector<Central*> newBlueprint = buildGraph();
 
-    //cout << "\nFINISH READING\n";
-    //cout << "\n------------------------\n";
-
-    //printGraph(oldBlueprint);
-    //cout << "\n------------------\n";
-    //printGraph(newBlueprint);
-
     bool yes = areFromSameCity(oldBlueprint, newBlueprint);
     if(yes) {
-        cout << "SIM";
+        cout << "SIM\n";
     } else {
-        cout << "NAO";
+        cout << "NAO\n";
     }
 
     return 0;
