@@ -12,8 +12,6 @@ class Central {
         vector<Central*> destinations;
 
         bool visited;
-        bool isPresentInTheOther;
-        Central():isPresentInTheOther(false) {};
 };
 
 vector<Central*> buildGraph();
@@ -33,67 +31,60 @@ int main() {
     return 0;
 }
 
-void remove(Central* font, Central* destiny, vector<Central*> oldBlueprint) {
-    for (unsigned int i = 0; i < oldBlueprint.size(); i++) {
-        Central* central = oldBlueprint.at(i);
-        if(central->origin.compare(font->origin) == 0 ||
-            central->origin.compare(destiny->origin) == 0) {
-            for (unsigned int j = 0; j < central->destinations.size(); j++){
-                Central* central2 = central->destinations.at(j);
-                if(central2->origin.compare(font->origin) == 0 ||
-                        central2->origin.compare(destiny->origin) == 0) {
-                    central->destinations.erase(central->destinations.begin() + j);
-                }
-            }
+Central* find(vector<Central*> graph, string searched) {
+    for (unsigned int k = 0; k < graph.size(); k++) {
+        Central* vertex = graph.at(k);
+        if(searched.compare(vertex->origin) == 0) {
+            return vertex;
         }
     }
+    return NULL;
 }
 
-void depthSearchVisit(Central* font, Central* vertex, vector<Central*> oldBlueprint) {
+bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny, 
+                                                vector<Central*> oldBlueprint) {
     vertex->visited = true;
-
     for(unsigned int i = 0; i < vertex->destinations.size(); i++) {
         Central* adjacentVertex = vertex->destinations.at(i);
         if(!adjacentVertex->visited) {
-            if(adjacentVertex->isPresentInTheOther) {
-                remove(font, vertex, oldBlueprint);
-            } else {
-                depthSearchVisit(font, adjacentVertex, oldBlueprint);
+            
+            if(adjacentVertex->origin.compare(destiny) == 0) {
+                return true;
             }
-        }
-    }
-}
 
-bool checkVertexes(vector<Central*> oldBlueprint, vector<Central*> newBlueprint) {
-    for(unsigned int i = 0; i < oldBlueprint.size(); i++) {
-        Central* oldCentral = oldBlueprint.at(i);
-        bool found = false;
-        for(unsigned int j = 0; j < newBlueprint.size(); j++) {
-            Central* newCentral = oldBlueprint.at(i);
-            if(newCentral->origin.compare(oldCentral->origin) == 0) {
-                newCentral->isPresentInTheOther = true;
-                found = true;
-                break;
+            if(find(oldBlueprint, adjacentVertex->origin)) {
+                continue;
+            }
+
+            bool result = isThereAPathWithOnlyNewCentrals(adjacentVertex, destiny, oldBlueprint);
+            if(result) {
+                return true;
             }
         }
-        if(!found) {
-            return false;
-        }
     }
-    return true;
+    return false;
 }
 
 bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprint) {
-    checkVertexes(oldBlueprint, newBlueprint);
+    for(unsigned int i = 0; i < oldBlueprint.size(); i++) {
+        Central* oldOrigin = oldBlueprint.at(i);
+        Central* newOrigin = find(newBlueprint, oldOrigin->origin);
 
-    for(unsigned int i = 0; i < newBlueprint.size(); i++) {
-        Central* vertex = newBlueprint.at(i);
-
-        for (unsigned int h = 0; h < newBlueprint.size(); h++) {
-                newBlueprint.at(h)->visited = false;
+        if(newOrigin == NULL) {
+            return false;
         }
-        if(vertex->isPresentInTheOther) {
-            depthSearchVisit(vertex, vertex, oldBlueprint);
+
+        for(unsigned int j = 0; j < oldOrigin->destinations.size(); j++) {
+            Central* oldDestiny = oldOrigin->destinations.at(j);
+
+            for (unsigned int h = 0; h < newBlueprint.size(); h++) {
+                newBlueprint.at(h)->visited = false;
+            }
+            bool isCorrectPathThere = isThereAPathWithOnlyNewCentrals(newOrigin, 
+                                        oldDestiny->origin, oldBlueprint);
+            if(!isCorrectPathThere) {
+                return false;
+            }
         }
     }
     return true;
