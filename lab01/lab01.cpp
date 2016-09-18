@@ -34,7 +34,7 @@ int main() {
 
 void printVector(vector<Central*> dest) {
     cout << "      ";
-    for (int i = 0; i < dest.size(); i++) {
+    for (unsigned int i = 0; i < dest.size(); i++) {
         Central* d = dest.at(i);
         cout << d->origin << "  |  ";
     }
@@ -42,7 +42,7 @@ void printVector(vector<Central*> dest) {
 }
 
 void printGraph(vector<Central*> graph) {
-    for (int i = 0; i < graph.size(); i++) {
+    for (unsigned int i = 0; i < graph.size(); i++) {
         Central* c = graph.at(i);
         cout << c->origin << "\n";
         cout << "      childs: " << c->destinations.size() << "\n";
@@ -51,7 +51,7 @@ void printGraph(vector<Central*> graph) {
 }
 
 Central* find(vector<Central*> graph, string searched) {
-    for (int k = 0; k < graph.size(); k++) {
+    for (unsigned int k = 0; k < graph.size(); k++) {
         Central* vertex = graph.at(k);
         if(searched.compare(vertex->origin) == 0) {
             return vertex;
@@ -63,7 +63,7 @@ Central* find(vector<Central*> graph, string searched) {
 bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny, 
                                                 vector<Central*> oldBlueprint) {
     vertex->visited = true;
-    for(int i = 0; i < vertex->destinations.size(); i++) {
+    for(unsigned int i = 0; i < vertex->destinations.size(); i++) {
         Central* adjacentVertex = vertex->destinations.at(i);
         if(!adjacentVertex->visited) {
             
@@ -85,7 +85,7 @@ bool isThereAPathWithOnlyNewCentrals(Central* vertex, string destiny,
 }
 
 bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprint) {
-    for(int i = 0; i < oldBlueprint.size(); i++) {
+    for(unsigned int i = 0; i < oldBlueprint.size(); i++) {
         Central* oldOrigin = oldBlueprint.at(i);
         Central* newOrigin = find(newBlueprint, oldOrigin->origin);
 
@@ -93,10 +93,10 @@ bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprin
             return false;
         }
 
-        for(int j = 0; j < oldOrigin->destinations.size(); j++) {
+        for(unsigned int j = 0; j < oldOrigin->destinations.size(); j++) {
             Central* oldDestiny = oldOrigin->destinations.at(j);
 
-            for (int h = 0; h < newBlueprint.size(); h++)
+            for (unsigned int h = 0; h < newBlueprint.size(); h++)
             {
                 newBlueprint.at(h)->visited = false;
             }
@@ -113,15 +113,15 @@ bool areFromSameCity(vector<Central*> oldBlueprint, vector<Central*> newBlueprin
 vector<Central*> buildGraph() {
     vector<Central*> graph;
     
-    int m1;
+    unsigned int m1;
     cin >> m1;
-    for(int i = 0; i < m1; i++) {
+    for(unsigned int i = 0; i < m1; i++) {
 
         string vertex1, vertex2;
         cin >> vertex1 >> vertex2;
 
         Central *central1 = NULL, *central2 = NULL;
-        for (int i = 0; i < graph.size(); i++) {
+        for (unsigned int i = 0; i < graph.size(); i++) {
             Central* central = graph.at(i);
 
             if(central->origin.compare(vertex1) == 0) {

@@ -37,7 +37,7 @@ if [ ! -d $testsFolder ]; then
     mkdir $testsFolder
 fi
 
-if g++ $labFolder/*.cpp -o $packagesFolder/lab$labNumber; then
+if g++ -ansi -pedantic -Wall -lm $labFolder/*.cpp -o $packagesFolder/lab$labNumber; then
 
     if test $2 -gt 0; then
         echo "Running tests..."
