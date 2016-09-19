@@ -11,7 +11,9 @@ class Vertex {
         string name;
         list<Vertex*> adjacents;
 
+        // indicate if the vertex was already visited during the depth search
         bool visited;
+        // indicate if the vertex is present in the dead file 
         bool isPresentInTheOther;
         Vertex():isPresentInTheOther(false) {};
 };
@@ -20,9 +22,12 @@ list<Vertex*> buildGraph();
 bool areFromSameCity(list<Vertex*> oldBlueprint, list<Vertex*> newBlueprint);
 
 int main() {
+    // builds the graph of the dead file
     list<Vertex*> oldBlueprint = buildGraph();
+    // builds the graph of the damaged blueprint
     list<Vertex*> newBlueprint = buildGraph();
 
+    // check if both graphs are from the same city
     bool yes = areFromSameCity(oldBlueprint, newBlueprint);
     if(yes) {
         cout << "SIM\n";
@@ -33,13 +38,20 @@ int main() {
     return 0;
 }
 
+/*
+ * Searches for a vertex in graph that has the given name
+*/
 Vertex* find(list<Vertex*> graph, string searched) {
+    // for each vertex in the graph
     for (list<Vertex*>::iterator it = graph.begin(); it != graph.end();  it++) {
         Vertex* vertex = *it;
+        // checks if the current vertex has the desired name
         if(searched.compare(vertex->name) == 0) {
+            // if it has, returns it
             return vertex;
         }
     }
+    // if no vertex were found untill here, the vertex is not on the graph
     return NULL;
 }
 
