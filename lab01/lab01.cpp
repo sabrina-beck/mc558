@@ -1,3 +1,8 @@
+/*
+ * Name: Sabrina Beck Angelini
+ * RA: 157240
+ */
+
 #include <iostream>
 #include <list>
 #include <stdlib.h>
