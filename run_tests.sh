@@ -52,11 +52,11 @@ if g++ -ansi -pedantic -Wall -lm $labFolder/*.cpp -o $packagesFolder/lab$labNumb
         fi
 
         if [ ! -f $testsFolder/$testName.in ]; then
-            curl -k -s -o $testsFolder/$testName.in https://susy.ic.unicamp.br:9999/mc458ab/$labNumber/dados/$testName.in > /dev/null
+            curl -k -s -o $testsFolder/$testName.in https://susy.ic.unicamp.br:9999/mc558ab/$labNumber/dados/$testName.in > /dev/null
         fi
 
         if [ ! -f $testsFolder/$testName.res ]; then
-            curl -k -s -o $testsFolder/$testName.res https://susy.ic.unicamp.br:9999/mc458ab/$labNumber/dados/$testName.res > /dev/null
+            curl -k -s -o $testsFolder/$testName.res https://susy.ic.unicamp.br:9999/mc558ab/$labNumber/dados/$testName.res > /dev/null
         fi
 
         ./$packagesFolder/lab$labNumber < $testsFolder/$testName.in > $testsFolder/$testName.out
