@@ -8,7 +8,7 @@
 #include <list>
 using namespace std;
 
-typedef enum { GREEN = 0, YELLOW = 1, RED = 2 } Color;
+typedef enum { Green, Yellow, Red } Color;
 
 class Edge {
     public:
@@ -40,6 +40,7 @@ class Vertex {
 class Graph {
     public:
         void addEdge(Edge *edge);
+        int countPossiblePaths();
         void print();
 
         Graph(unsigned int size, unsigned int origin, unsigned int destiny) {
@@ -68,6 +69,9 @@ class Graph {
         unsigned int origin;
         unsigned int destiny;
         unsigned int size;
+
+        int countPossiblePaths(Color previousEdgeColor, Vertex* vertex);
+        bool canFollowThisPath(Color previousEdgeColor, Edge* currentEdge);
 };
 
 Graph* readGraph();
@@ -75,7 +79,11 @@ Graph* readGraph();
 int main() {
     Graph* graph = readGraph();
 
-    graph->print();
+    //graph->print();
+
+    int pathsCount = graph->countPossiblePaths();
+
+    cout << pathsCount << "\n";
 
     return 0;
 }
@@ -111,18 +119,61 @@ void Graph::addEdge(Edge *edge) {
     vertex->edges.push_back(edge);
 }
 
+int Graph::countPossiblePaths() {
+    Vertex* originVertex = this->vertexes[this->origin];
+    return this->countPossiblePaths(Green, originVertex);
+}
+
+int Graph::countPossiblePaths(Color previousEdgeColor, Vertex* vertex) {
+    if(vertex == this->vertexes[this->destiny]) {
+        return 1;
+    }
+
+    int count = 0;
+    for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
+        Edge* edge = *it;
+
+        if(this->canFollowThisPath(previousEdgeColor, edge)) {
+            Vertex* destinyVertex = this->vertexes[edge->getDestiny()];
+            count = count + this->countPossiblePaths(edge->getColor(), destinyVertex);
+        }
+    }
+    return count;
+}
+
+bool Graph::canFollowThisPath(Color previousEdgeColor, Edge* currentEdge) {
+    if(previousEdgeColor == Yellow) {
+        return currentEdge->getColor() != Red;
+    }
+
+    if(previousEdgeColor == Red) {
+        return currentEdge->getColor() == Green;
+    }
+
+    return true;
+}
+
+string colorName(int i) {
+    if(i == 0) {
+        return "VERDE";
+    }
+
+    if(i == 1) {
+        return "AMARELO";
+    }
+    
+    return "VERMELHO";
+}
+
 void Graph::print() {
     for(unsigned int i = 0; i < this->getSize(); i++) {
         Vertex* vertex = this->vertexes[i];
         cout << "Vertice no " << i << "\n";
 
-        if(vertex->edges.size() > 0) {
-            cout << "\t";
-        }
-
         for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
             Edge* edge = *it;
-            cout << "(" << edge->getOrigin() << ", " << edge->getDestiny() << ") ";
+            cout << "\t(" << edge->getOrigin() << ", " << edge->getDestiny() << ") ";
+            cout << colorName(edge->getColor()) << "\n";
         }
         cout << "\n";
     }
