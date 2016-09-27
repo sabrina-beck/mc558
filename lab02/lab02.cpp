@@ -41,7 +41,6 @@ class Graph {
     public:
         void addEdge(Edge *edge);
         int countPossiblePaths();
-        void print();
 
         Graph(unsigned int size, unsigned int origin, unsigned int destiny) {
             this->vertexes = new Vertex*[size];
@@ -78,8 +77,6 @@ Graph* readGraph();
 
 int main() {
     Graph* graph = readGraph();
-
-    //graph->print();
 
     int pathsCount = graph->countPossiblePaths();
 
@@ -151,30 +148,4 @@ bool Graph::canFollowThisPath(Color previousEdgeColor, Edge* currentEdge) {
     }
 
     return true;
-}
-
-string colorName(int i) {
-    if(i == 0) {
-        return "VERDE";
-    }
-
-    if(i == 1) {
-        return "AMARELO";
-    }
-    
-    return "VERMELHO";
-}
-
-void Graph::print() {
-    for(unsigned int i = 0; i < this->getSize(); i++) {
-        Vertex* vertex = this->vertexes[i];
-        cout << "Vertice no " << i << "\n";
-
-        for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
-            Edge* edge = *it;
-            cout << "\t(" << edge->getOrigin() << ", " << edge->getDestiny() << ") ";
-            cout << colorName(edge->getColor()) << "\n";
-        }
-        cout << "\n";
-    }
 }
