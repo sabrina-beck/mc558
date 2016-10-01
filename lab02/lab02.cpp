@@ -180,6 +180,9 @@ int Graph::countPossiblePaths() {
  * This is the recursive function.
  */
 void Graph::countPossiblePaths(Vertex* vertex) {
+    // mark the current vertex as visited
+    vertex->visited = true;
+
     // we check each edge for the current vertex
     for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
         Edge* edge = *it;
@@ -214,7 +217,4 @@ void Graph::countPossiblePaths(Vertex* vertex) {
             vertex->pathsAfterGreen += destinyVertex->pathsAfterRed;
         }
     }
-
-    // mark the current vertex as visited
-    vertex->visited = true;
 }
