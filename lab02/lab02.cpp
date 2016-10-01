@@ -39,11 +39,13 @@ class Edge {
  */
 class Vertex {
     public:
-        list<Edge*> edges;
-        unsigned int pathsAfterGreen;
-        unsigned int pathsAfterYellow;
-        unsigned int pathsAfterRed;
-        bool visited;
+        list<Edge*> edges; // incident edges
+        // count possible paths starting on this vertex
+        // when arriving to this vertex through a edge of a dertemined color
+        unsigned int pathsAfterGreen; // from a green edge
+        unsigned int pathsAfterYellow; // from a yellow edge
+        unsigned int pathsAfterRed; // from a red edge
+        bool visited; // indicates if this vertex was already visited
         Vertex(){
             this->pathsAfterGreen = 0;
             this->pathsAfterYellow = 0;
@@ -57,9 +59,9 @@ class Vertex {
  */
 class Graph {
     public:
-        void addEdge(Edge *edge);
-        int countPossiblePaths();
-        void print();
+        void addEdge(Edge *edge); // add a new edge to the graph
+        int countPossiblePaths(); // count possible paths from the origin to the destiny
+        void print(); // debug purpose function, prints the graph
 
         Graph(unsigned int size, unsigned int origin, unsigned int destiny) {
             this->vertexes = new Vertex*[size];
@@ -88,7 +90,7 @@ class Graph {
         unsigned int destiny;
         unsigned int size;
 
-        void countPossiblePaths(Color previousEdgeColor, Vertex* vertex);
+        void countPossiblePaths(Vertex* vertex);
 };
 
 Graph* readGraph();
@@ -146,57 +148,75 @@ Graph* readGraph() {
  * Add an edge to the graph
  */
 void Graph::addEdge(Edge *edge) {
-    // fetch the edges origin vertex
+    // fetch the origin vertex
     Vertex* vertex = this->vertexes[edge->getOrigin()];
     // add the edge to the adjacency list of its origin vertex
     vertex->edges.push_back(edge);
 }
 
 /*
- * Counts all the possible paths that meets whith the established conditions for this graph
+ * Counts all the possible paths that meets with the established conditions for this graph
  */
 int Graph::countPossiblePaths() {
+    // Initializes the destiny vertex
     Vertex* destinyVertex = this->vertexes[this->destiny];
     destinyVertex->pathsAfterGreen = 1;
     destinyVertex->pathsAfterYellow = 1;
     destinyVertex->pathsAfterRed = 1;
-    destinyVertex->visited = 1;
+    // we mark the destiny vertex as visited because we already calculated
+    // its possible paths
+    destinyVertex->visited = true;
 
     Vertex* originVertex = this->vertexes[this->origin];
-    this->countPossiblePaths(Green, originVertex);
+    // we count the possible paths beginning on the origin vertex
+    this->countPossiblePaths(originVertex);
+    // since a green edge allows us to catch any path independent of its edges color
+    // we consider that the origin vertex has a previous edge of the green color
     return originVertex->pathsAfterGreen;
 }
 
 /*
  * Counts all the possible paths that meets whith the established conditions
  * for the subgraph that has vertex as its origin
- * This is the recursive function. It receives the previous edge color to check
- * the conditions
+ * This is the recursive function.
  */
-void Graph::countPossiblePaths(Color previousEdgeColor, Vertex* vertex) {
-    if(vertex->visited) {
-        return;
-    }
-
+void Graph::countPossiblePaths(Vertex* vertex) {
+    // we check each edge for the current vertex
     for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
         Edge* edge = *it;
         Vertex* destinyVertex = this->vertexes[edge->getDestiny()];
+
+        // if the destiny vertex of the current edge hasn't been visited yet
+        // we make the depth search on it to calculate its paths
         if(!destinyVertex->visited) {
-            this->countPossiblePaths(edge->getColor(), destinyVertex);
+            this->countPossiblePaths(destinyVertex);
         }
 
         if(edge->getColor() == Green) {
+            // sum the destiny vertex possible paths that comes after a green edge
+            // to all the possibilities of previous edge color,
+            // since the current edge is green and any previous color allows the
+            // next edge on the path to be green
             vertex->pathsAfterGreen += destinyVertex->pathsAfterGreen;
             vertex->pathsAfterYellow += destinyVertex->pathsAfterGreen;
             vertex->pathsAfterRed += destinyVertex->pathsAfterGreen;
         } else if(edge->getColor() == Yellow) {
+            // sum the destiny vertex possible paths that comes after a yellow edge
+            // to the counter of possible paths where the previous edge is green or yellow,
+            // since the current edge is yellow and only green and yellow edges allows
+            // the next edge on the path to be yellow
             vertex->pathsAfterGreen += destinyVertex->pathsAfterYellow;
             vertex->pathsAfterYellow += destinyVertex->pathsAfterYellow;
-        } else {
+        } else { // edge->color == Red
+            // sum the destiny vertex possible paths that comes after a red edge
+            // to the counter of possible paths where the previous edge is green,
+            // since the current edge is red and only green edges allows
+            // the next edge on the path to be red
             vertex->pathsAfterGreen += destinyVertex->pathsAfterRed;
         }
     }
 
+    // mark the current vertex as visited
     vertex->visited = true;
 }
 
