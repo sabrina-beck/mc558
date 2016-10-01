@@ -61,7 +61,6 @@ class Graph {
     public:
         void addEdge(Edge *edge); // add a new edge to the graph
         int countPossiblePaths(); // count possible paths from the origin to the destiny
-        void print(); // debug purpose function, prints the graph
 
         Graph(unsigned int size, unsigned int origin, unsigned int destiny) {
             this->vertexes = new Vertex*[size];
@@ -218,34 +217,4 @@ void Graph::countPossiblePaths(Vertex* vertex) {
 
     // mark the current vertex as visited
     vertex->visited = true;
-}
-
-string colorName(int i) {
-    if(i == 0) {
-        return "VERDE";
-    }
-
-    if(i == 1) {
-        return "AMARELO";
-    }
-    
-    return "VERMELHO";
-}
-
-void Graph::print() {
-    for(unsigned int i = 0; i < this->getSize(); i++) {
-        Vertex* vertex = this->vertexes[i];
-        cout << "Vertice no " << i << "\n";
-        cout << "\t Caminhos depois de aresta VERDE " << vertex->pathsAfterGreen << "\n";
-        cout << "\t Caminhos depois de aresta AMARELA " << vertex->pathsAfterYellow << "\n";
-        cout << "\t Caminhos depois de aresta VERMELHA " << vertex->pathsAfterRed << "\n";
-        cout << "\t Visitado? " << vertex->visited << "\n";
-
-        for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
-            Edge* edge = *it;
-            cout << "\t(" << edge->getOrigin() << ", " << edge->getDestiny() << ") ";
-            cout << colorName(edge->getColor()) << "\n";
-        }
-        cout << "\n";
-    }
 }
