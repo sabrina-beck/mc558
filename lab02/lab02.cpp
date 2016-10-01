@@ -59,6 +59,7 @@ class Graph {
     public:
         void addEdge(Edge *edge);
         int countPossiblePaths();
+        void print();
 
         Graph(unsigned int size, unsigned int origin, unsigned int destiny) {
             this->vertexes = new Vertex*[size];
@@ -87,8 +88,7 @@ class Graph {
         unsigned int destiny;
         unsigned int size;
 
-        int countPossiblePaths(Color previousEdgeColor, Vertex* vertex);
-        bool canFollowThisPath(Color previousEdgeColor, Edge* currentEdge);
+        void countPossiblePaths(Color previousEdgeColor, Vertex* vertex);
 };
 
 Graph* readGraph();
@@ -156,13 +156,15 @@ void Graph::addEdge(Edge *edge) {
  * Counts all the possible paths that meets whith the established conditions for this graph
  */
 int Graph::countPossiblePaths() {
-    // fetch the graphs origin vertex
+    Vertex* destinyVertex = this->vertexes[this->destiny];
+    destinyVertex->pathsAfterGreen = 1;
+    destinyVertex->pathsAfterYellow = 1;
+    destinyVertex->pathsAfterRed = 1;
+    destinyVertex->visited = 1;
+
     Vertex* originVertex = this->vertexes[this->origin];
-    // how green is the color that allows us to choose any color as the next step
-    // we can use it as the previous color to the origin vertex,
-    // since we don't have a previous edge at this point
-    // we count the number of possible paths starting on originVertex
-    return this->countPossiblePaths(Green, originVertex);
+    this->countPossiblePaths(Green, originVertex);
+    return originVertex->pathsAfterGreen;
 }
 
 /*
@@ -171,70 +173,59 @@ int Graph::countPossiblePaths() {
  * This is the recursive function. It receives the previous edge color to check
  * the conditions
  */
-int Graph::countPossiblePaths(Color previousEdgeColor, Vertex* vertex) {
-
-    // if the current vertex is the destiny vertexes, we found a complete path
-    if(vertex == this->vertexes[this->destiny]) {
-        return 1; // counting the found path
-    }
-
+void Graph::countPossiblePaths(Color previousEdgeColor, Vertex* vertex) {
     if(vertex->visited) {
-        if(previousEdgeColor == Green) {
-            return vertex->pathsAfterGreen;
-        }
-
-        if(previousEdgeColor == Yellow) {
-            return vertex->pathsAfterYellow;
-        }
-
-        return vertex->pathsAfterRed;
+        return;
     }
 
-    // otherwise, we have to keeping searching path the remaining vertex on the current path
-    int count = 0;
-    //for each edge of the current path
     for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
         Edge* edge = *it;
+        Vertex* destinyVertex = this->vertexes[edge->getDestiny()];
+        if(!destinyVertex->visited) {
+            this->countPossiblePaths(edge->getColor(), destinyVertex);
+        }
 
-        // if the previous edge and the current edge has colors that allows
-        // the path to continue on the current edge
-        if(this->canFollowThisPath(previousEdgeColor, edge)) {
-            Vertex* destinyVertex = this->vertexes[edge->getDestiny()];
-            // we analyze the possible paths by traveling through this edge
-            // the paths count is the sum of all possible paths found by searching
-            // on each edge of the current vertex 
-            count = count + this->countPossiblePaths(edge->getColor(), destinyVertex);
-            if(edge->getColor() == Green) {
-                vertex->pathsAfterGreen += destinyVertex->pathsAfterGreen;
-                vertex->pathsAfterYellow += destinyVertex->pathsAfterGreen;
-                vertex->pathsAfterRed += destinyVertex->pathsAfterGreen;
-            } else if(edge->getColor() == Yellow) {
-                vertex->pathsAfterGreen += destinyVertex->pathsAfterYellow;
-                vertex->pathsAfterYellow += destinyVertex->pathsAfterYellow;
-            } else {
-                vertex->pathsAfterGreen += destinyVertex->pathsAfterRed;
-            }
+        if(edge->getColor() == Green) {
+            vertex->pathsAfterGreen += destinyVertex->pathsAfterGreen;
+            vertex->pathsAfterYellow += destinyVertex->pathsAfterGreen;
+            vertex->pathsAfterRed += destinyVertex->pathsAfterGreen;
+        } else if(edge->getColor() == Yellow) {
+            vertex->pathsAfterGreen += destinyVertex->pathsAfterYellow;
+            vertex->pathsAfterYellow += destinyVertex->pathsAfterYellow;
+        } else {
+            vertex->pathsAfterGreen += destinyVertex->pathsAfterRed;
         }
     }
 
     vertex->visited = true;
-    return count;
 }
 
-/*
- * Check if we can follow a certain path by analyzing the previous edge color and current one
- */
-bool Graph::canFollowThisPath(Color previousEdgeColor, Edge* currentEdge) {
-    // if the previous edge is yellow, we can't travel through a red edge
-    if(previousEdgeColor == Yellow) {
-        return currentEdge->getColor() != Red;
+string colorName(int i) {
+    if(i == 0) {
+        return "VERDE";
     }
 
-    // if the previous edge is red, we can only travel through a green edge
-    if(previousEdgeColor == Red) {
-        return currentEdge->getColor() == Green;
+    if(i == 1) {
+        return "AMARELO";
     }
+    
+    return "VERMELHO";
+}
 
-    // if the previous edge is green, we can travel through any edge
-    return true;
+void Graph::print() {
+    for(unsigned int i = 0; i < this->getSize(); i++) {
+        Vertex* vertex = this->vertexes[i];
+        cout << "Vertice no " << i << "\n";
+        cout << "\t Caminhos depois de aresta VERDE " << vertex->pathsAfterGreen << "\n";
+        cout << "\t Caminhos depois de aresta AMARELA " << vertex->pathsAfterYellow << "\n";
+        cout << "\t Caminhos depois de aresta VERMELHA " << vertex->pathsAfterRed << "\n";
+        cout << "\t Visitado? " << vertex->visited << "\n";
+
+        for (list<Edge*>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
+            Edge* edge = *it;
+            cout << "\t(" << edge->getOrigin() << ", " << edge->getDestiny() << ") ";
+            cout << colorName(edge->getColor()) << "\n";
+        }
+        cout << "\n";
+    }
 }
