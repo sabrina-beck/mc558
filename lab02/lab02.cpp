@@ -40,6 +40,16 @@ class Edge {
 class Vertex {
     public:
         list<Edge*> edges;
+        unsigned int pathsAfterGreen;
+        unsigned int pathsAfterYellow;
+        unsigned int pathsAfterRed;
+        bool visited;
+        Vertex(){
+            this->pathsAfterGreen = 0;
+            this->pathsAfterYellow = 0;
+            this->pathsAfterRed = 0;
+            this->visited = false;
+        }
 };
 
 /*
@@ -162,9 +172,22 @@ int Graph::countPossiblePaths() {
  * the conditions
  */
 int Graph::countPossiblePaths(Color previousEdgeColor, Vertex* vertex) {
+
     // if the current vertex is the destiny vertexes, we found a complete path
     if(vertex == this->vertexes[this->destiny]) {
         return 1; // counting the found path
+    }
+
+    if(vertex->visited) {
+        if(previousEdgeColor == Green) {
+            return vertex->pathsAfterGreen;
+        }
+
+        if(previousEdgeColor == Yellow) {
+            return vertex->pathsAfterYellow;
+        }
+
+        return vertex->pathsAfterRed;
     }
 
     // otherwise, we have to keeping searching path the remaining vertex on the current path
@@ -181,8 +204,20 @@ int Graph::countPossiblePaths(Color previousEdgeColor, Vertex* vertex) {
             // the paths count is the sum of all possible paths found by searching
             // on each edge of the current vertex 
             count = count + this->countPossiblePaths(edge->getColor(), destinyVertex);
+            if(edge->getColor() == Green) {
+                vertex->pathsAfterGreen += destinyVertex->pathsAfterGreen;
+                vertex->pathsAfterYellow += destinyVertex->pathsAfterGreen;
+                vertex->pathsAfterRed += destinyVertex->pathsAfterGreen;
+            } else if(edge->getColor() == Yellow) {
+                vertex->pathsAfterGreen += destinyVertex->pathsAfterYellow;
+                vertex->pathsAfterYellow += destinyVertex->pathsAfterYellow;
+            } else {
+                vertex->pathsAfterGreen += destinyVertex->pathsAfterRed;
+            }
         }
     }
+
+    vertex->visited = true;
     return count;
 }
 
