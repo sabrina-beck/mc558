@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <cfloat>
+#include <cstdlib>
 using namespace std;
 
 class Coordinate {
@@ -21,7 +22,13 @@ class Coordinate {
         int y;
 };
 
-class Vertex {
+class Element {
+    public:
+        virtual double getKey() = 0;
+        virtual void setKey(double key) = 0;
+};
+
+class Vertex : public Element {
     public:
         Vertex(Coordinate* coordinate) {
             this->coordinate = coordinate;
@@ -38,10 +45,10 @@ class Vertex {
         void setFather(Vertex* newFather) {
             this->father = newFather;
         }
-        double getKey() {
+        virtual double getKey() {
             return this->key;
         }
-        void setKey(double key) {
+        virtual void setKey(double key) {
             this->key = key;
         }
         double isOnHeap() {
@@ -50,11 +57,18 @@ class Vertex {
         void setOnHeap(bool onHeap) {
             this->onHeap = onHeap;
         }
+        int getIndex() {
+            return this->index;
+        }
+        void setIndex(int index) {
+            this->index = index;
+        }
     private:
         Coordinate* coordinate;
         Vertex* father;
         double key;
         bool onHeap;
+        int index;
 };
 
 class Case {
@@ -62,6 +76,11 @@ class Case {
         Case(int numberOfConnectionPoints, int twistedPairMaxDistance) {
             this->numberOfConnectionPoints = numberOfConnectionPoints;
             this->twistedPairMaxDistance = twistedPairMaxDistance;
+            this->vertexes = (Vertex**) malloc(numberOfConnectionPoints * sizeof(Vertex*));
+            this->currentIndex = 0;
+        }
+        ~Case() {
+            free(this->vertexes);
         }
         int getNumberOfConnectionPoints() {
             return this->numberOfConnectionPoints;
@@ -70,15 +89,16 @@ class Case {
             return this->twistedPairMaxDistance;
         }
         void addVertex(Vertex* vertex) {
-            this->vertexes.push_back(vertex);
+            this->vertexes[this->currentIndex++] = vertex;
         }
-        vector<Vertex*> getVertexes() {
+        Vertex** getVertexes() {
             return this->vertexes;
         }
     private:
         int numberOfConnectionPoints;
         int twistedPairMaxDistance;
-        vector<Vertex*> vertexes;
+        Vertex** vertexes;
+        int currentIndex;
 };
 
 class NetworkStructure {
@@ -104,9 +124,27 @@ class NetworkStructure {
         double opticalFiberSize;
 };
 
+class MinHeap {
+    public:
+        MinHeap(Vertex** vertexes, int size);
+        ~MinHeap();
+        bool isEmpty();
+        Vertex* extractMin();
+        void decreaseKey(Vertex* vertex, double key);
+    private:
+        void minHeapify(int index);
+        int father(int i);
+        int right(int i);
+        int left(int i);
+        void print();
+        int size;
+        Vertex** vertexes;
+};
+
 vector<Case*> readInput();
 void printInput(vector<Case*> cases);
 NetworkStructure minimumCableConfiguration(Case* networkCase);
+void minimumSpawningTree(Case* graph, Vertex* root);
 
 int main() {
     vector<Case*> cases = readInput();
@@ -117,8 +155,6 @@ int main() {
         cout << round(ns.getTwistedPairSize()) << " " 
                         << round(ns.getOpticalFiberSize()) << "\n";
     }
-
-    //printInput(cases);
 
     return 0;
 }
@@ -159,9 +195,9 @@ void printInput(vector<Case*> cases) {
         cout << currentCase->getNumberOfConnectionPoints() << " " 
                             << currentCase->getTwistedPairMaxDistance() << "\n";
 
-        vector<Vertex*> vertexes = currentCase->getVertexes();
-        for (vector<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
-            Vertex* vertex = *it;
+        Vertex** vertexes = currentCase->getVertexes();
+        for (int i = 0; i < currentCase->getNumberOfConnectionPoints(); i++) {
+            Vertex* vertex = vertexes[i];
             Coordinate* coordinate = vertex->getCoordinate();
             cout << coordinate->getX() << " "
                             << coordinate->getY() << "\n";
@@ -181,43 +217,182 @@ double weight(Vertex* u, Vertex* v) {
 }
 
 NetworkStructure minimumCableConfiguration(Case* networkCase) {
-    vector<Vertex*> vertexes = networkCase->getVertexes();
-    //Vertex* root = vertexes.at(0);
-    //minimumSpawningTree(graph, root);
+    Vertex** vertexes = networkCase->getVertexes();
+    Vertex* root = vertexes[0];
+    minimumSpawningTree(networkCase, root);
 
     NetworkStructure structure;
-    for (vector<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
-        Vertex* vertex = *it;
-        if(vertex->getFather() != NULL) {
-            double edgeWeight = vertex->getKey();
-            if(edgeWeight > networkCase->getTwistedPairMaxDistance()) {
-                structure.addOpticalFiber(edgeWeight);
-            } else {
-                structure.addTwistedPair(edgeWeight);
-            }
+    for (int i = 0; i < networkCase->getNumberOfConnectionPoints(); i++) {
+        double edgeWeight = vertexes[i]->getKey();
+
+        if(edgeWeight > networkCase->getTwistedPairMaxDistance()) {
+            structure.addOpticalFiber(edgeWeight);
+        } else {
+            structure.addTwistedPair(edgeWeight);
         }
     }
 
     return structure;
 }
 
-//void minimumSpawningTree(Case* graph, Vertex* root) {
-//    root->setKey(0);
-//    Heap heap = new FibonacciHeap(graph->getVertexes());
-//    while(!heap.isEmpty()) {
-//        Vertex* u = heap.extractMin();
-//        u->setOnHeap(false);
-//
-//        for (vector<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
-//            Vertex* vertex = *it;
-//
-//            double edgeWeight = weight(u, vertex);
-//            if(vertex != u && vertex->isOnHeap() && edgeWeight < vertex->getKey()) {
-//                vertex->setFather(u);
-//                vertex->setKey(edgeWeight);
-//                heap.reorganize(vertex);
-//            }
-//        }
-//    }
-//}
+void minimumSpawningTree(Case* networkCase, Vertex* root) {
+    root->setKey(0);
+    MinHeap heap(networkCase->getVertexes(), networkCase->getNumberOfConnectionPoints());
+    while(!heap.isEmpty()) {
+        Vertex* u = heap.extractMin();
+        u->setOnHeap(false);
+        
+        Vertex** vertexes = networkCase->getVertexes();
+        for (int i = 0; i < networkCase->getNumberOfConnectionPoints(); i++) {
+            Vertex* vertex = vertexes[i];
+            
+            double edgeWeight = weight(u, vertex);
+            if(vertex->isOnHeap() && edgeWeight < vertex->getKey()) {
+                vertex->setFather(u);
+                heap.decreaseKey(vertex, edgeWeight);
+            }
+        }
+    }
+}
 
+void swap(Vertex** a, Vertex** b) {
+    Vertex* tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+MinHeap::MinHeap(Vertex** vertexes, int size) {
+    this->size = size;
+    this->vertexes = (Vertex**) malloc(size * sizeof(Vertex*));
+
+    for(int i = 0; i < size; i++) {
+        this->vertexes[i] = vertexes[i];
+        this->vertexes[i]->setIndex(i);
+    }
+
+    for (int i = this->size/2; i >= 0; i--) {
+        this->minHeapify(i);
+    }
+
+}
+
+MinHeap::~MinHeap() {
+    free(this->vertexes);
+}
+
+void MinHeap::print() {
+    bool invalid = false;
+    for(int i = 0; i < this->size; i++) {
+        int left = this->left(i);
+        if(left < this->size && this->vertexes[i]->getKey() > this->vertexes[left]->getKey()) {
+            invalid = true;
+            cout << "INVALID i: " << i << " left child: " << left << "\n";
+        }
+
+        int right = this->right(i);
+        if(right < this->size && this->vertexes[i]->getKey() > this->vertexes[right]->getKey()) {
+            invalid = true;
+            cout << "INVALID i: " << i << " right child: " << right << "\n";
+        }
+
+        if(this->vertexes[i]->getIndex() != i) {
+            invalid = true;
+            cout << "INVALID i: " << i << " index: " << this->vertexes[i]->getIndex() << "\n";
+        }
+    }
+
+    if(invalid) {
+        cout << "\tPrinting INVALID heap: \n";
+        for(int i = 0; i < this->size; i++) {
+            cout << "\t\tindex: " << i << ", node: " << this->vertexes[i]->getKey() << "\n";
+            
+            int left = this->left(i);
+            if(left < this->size) {
+                cout << "\t\t\tleft: " << this->vertexes[left]->getKey() << "\n";
+            }
+    
+            int right = this->right(i);
+            if(right < this->size) {
+                cout << "\t\t\tright: " << this->vertexes[right]->getKey() << "\n";
+            }
+        }
+    }
+}
+
+int MinHeap::father(int i) {
+    return (i + 1)/2 - 1;
+}
+
+int MinHeap::left(int i) {
+    return 2*(i + 1) - 1;
+}
+
+int MinHeap::right(int i) {
+    return 2*(i + 1);
+}
+
+void MinHeap::minHeapify(int i) {
+    int left = this->left(i);
+    int right = this->right(i);
+    int lowest;
+
+    if (left < this->size && this->vertexes[left]->getKey() < this->vertexes[i]->getKey()) {
+        lowest = left;
+    } else {
+        lowest = i;
+    }
+
+    if (right < this->size && this->vertexes[right]->getKey() < this->vertexes[lowest]->getKey()) {
+        lowest = right;
+    }
+
+    if (lowest != i) {
+        swap(this->vertexes + i, this->vertexes + lowest);
+
+        this->vertexes[i]->setIndex(i);
+        this->vertexes[lowest]->setIndex(lowest);
+
+        this->minHeapify(lowest);
+    }
+}
+
+bool MinHeap::isEmpty() {
+    return this->size == 0;
+}
+
+Vertex* MinHeap::extractMin() {
+    if (this->size < 1) {
+        return NULL; // heap underflow
+    }
+
+    Vertex* min = this->vertexes[0];
+
+    this->vertexes[0] = this->vertexes[this->size - 1];
+    this->vertexes[0]->setIndex(0);
+    this->size = this->size - 1;
+    
+    this->minHeapify(0);
+
+    return min;
+}
+
+void MinHeap::decreaseKey(Vertex* vertex, double key) {
+    int i = vertex->getIndex();
+
+    if (key > this->vertexes[i]->getKey()) {
+        return; // error “nova chave maior que a atual”
+    }
+
+    this->vertexes[i]->setKey(key);
+    while (i > 0 && this->vertexes[this->father(i)]->getKey() > this->vertexes[i]->getKey()) {
+        int father = this->father(i);
+
+        swap(this->vertexes[i], this->vertexes[father]);
+
+        this->vertexes[i]->setIndex(i);
+        this->vertexes[father]->setIndex(father);
+
+        i = this->father(i);
+    }
+
+}
