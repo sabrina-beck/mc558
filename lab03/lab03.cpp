@@ -5,6 +5,9 @@
 #include <cstdlib>
 using namespace std;
 
+/*
+ * Represents a pair (x, y), a point in the plane
+ */
 class Coordinate {
     public:
         Coordinate(int x, int y) {
@@ -22,13 +25,10 @@ class Coordinate {
         int y;
 };
 
-class Element {
-    public:
-        virtual double getKey() = 0;
-        virtual void setKey(double key) = 0;
-};
-
-class Vertex : public Element {
+/*
+ * Represents a vertex, in this problem is a point of connection
+ */
+class Vertex {
     public:
         Vertex(Coordinate* coordinate) {
             this->coordinate = coordinate;
@@ -45,10 +45,10 @@ class Vertex : public Element {
         void setFather(Vertex* newFather) {
             this->father = newFather;
         }
-        virtual double getKey() {
+        double getKey() {
             return this->key;
         }
-        virtual void setKey(double key) {
+        void setKey(double key) {
             this->key = key;
         }
         double isOnHeap() {
@@ -64,13 +64,17 @@ class Vertex : public Element {
             this->index = index;
         }
     private:
-        Coordinate* coordinate;
-        Vertex* father;
-        double key;
-        bool onHeap;
-        int index;
+        Coordinate* coordinate; // the vertex position in the plane
+        Vertex* father;         // the vertex father in the minimum spanning tree
+        double key;             // the vertex key, the minimum weight of an edge that connects this vertex to the minimum spanning tree 
+        bool onHeap;            // indicates if this vertex is on the heap, used to calculate the minimum spanning tree
+        int index;              // the current index of the vertex on the heap, used to calculate the minimum spanning tree
 };
 
+/*
+ * Represents a case of connection points that we must calculate the minimum cable configuration
+ * to connect all the connection points
+ */
 class Case {
     public:
         Case(int numberOfConnectionPoints, int twistedPairMaxDistance) {
@@ -98,21 +102,31 @@ class Case {
         int numberOfConnectionPoints;
         int twistedPairMaxDistance;
         Vertex** vertexes;
-        int currentIndex;
+        int currentIndex; // current index, used to add new vertex to this case
 };
 
+/*
+ * Represents a network structure indicating the amount of twisted pair cabel and optical fiber
+ * to connect all the connection points given for a case
+ */
 class NetworkStructure {
     public:
         NetworkStructure() {
             this->twistedPairSize = 0.0;
             this->opticalFiberSize = 0.0;
         }
+        /*
+         * Add an amount of twisted pair cable to this configuration
+         */
         void addTwistedPair(double twistedPairSize) {
             this->twistedPairSize += twistedPairSize;
         }
         double getTwistedPairSize() {
             return this->twistedPairSize;
         }
+        /*
+         * Add an amount of optical fiber cable to this configuration
+         */
         void addOpticalFiber(double opticalFiberSize) {
             this->opticalFiberSize += opticalFiberSize;
         }
@@ -124,24 +138,38 @@ class NetworkStructure {
         double opticalFiberSize;
 };
 
+/*
+ * A minimum heap specification. I had to implement a heap, because none of the available
+ * heap implementations in C++ stantard library offered a decreaseKey method
+ * Represents a heap of vertexes.
+ */
 class MinHeap {
     public:
+        /* constructor */
         MinHeap(Vertex** vertexes, int size);
+        /* destructor */
         ~MinHeap();
+        /* check if the heap is empty */
         bool isEmpty();
+        /* extract the vertex with minimum weight (cable length) of the heap */
         Vertex* extractMin();
+        /* decrease the vertex key (the key is the minimum weight of an edge that connects the vertex to the minimum spanning tree) */
         void decreaseKey(Vertex* vertex, double key);
     private:
+        /* put the heap element (in the index position) on the correct place, keeping the minimum heap property  */
         void minHeapify(int index);
+        /* considering the node in the index i, calculates the index of the node's father, considering that the array is a tree */
         int father(int i);
+        /* considering the node in the index i, calculates the index of the node's right child, considering that the array is a tree */
         int right(int i);
+        /* considering the node in the index i, calculates the index of the node's left child, considering that the array is a tree */
         int left(int i);
-        int size;
-        Vertex** vertexes;
+
+        int size;           // the heap size
+        Vertex** vertexes;  // the vertexes array
 };
 
 vector<Case*> readInput();
-void printInput(vector<Case*> cases);
 NetworkStructure minimumCableConfiguration(Case* networkCase);
 void minimumSpawningTree(Case* graph, Vertex* root);
 
@@ -185,24 +213,6 @@ vector<Case*> readInput() {
     }
 
     return cases;
-}
-
-void printInput(vector<Case*> cases) {
-    cout << cases.size() << "\n";
-    for (vector<Case*>::iterator it = cases.begin(); it != cases.end(); it++) {
-        Case* currentCase = *it;
-        cout << currentCase->getNumberOfConnectionPoints() << " " 
-                            << currentCase->getTwistedPairMaxDistance() << "\n";
-
-        Vertex** vertexes = currentCase->getVertexes();
-        for (int i = 0; i < currentCase->getNumberOfConnectionPoints(); i++) {
-            Vertex* vertex = vertexes[i];
-            Coordinate* coordinate = vertex->getCoordinate();
-            cout << coordinate->getX() << " "
-                            << coordinate->getY() << "\n";
-        }
-
-    }
 }
 
 double weight(Vertex* u, Vertex* v) {
