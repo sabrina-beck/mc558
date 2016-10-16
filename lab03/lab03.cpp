@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cfloat>
 using namespace std;
 
 class Coordinate {
@@ -24,12 +25,36 @@ class Vertex {
     public:
         Vertex(Coordinate* coordinate) {
             this->coordinate = coordinate;
+            this->father = NULL;
+            this->key = DBL_MAX;
+            this->onHeap = true;
         }
         Coordinate* getCoordinate() {
             return this->coordinate;
         }
+        Vertex* getFather() {
+            return this->father;
+        }
+        void setFather(Vertex* newFather) {
+            this->father = newFather;
+        }
+        double getKey() {
+            return this->key;
+        }
+        void setKey(double key) {
+            this->key = key;
+        }
+        double isOnHeap() {
+            return this->onHeap;
+        }
+        void setOnHeap(bool onHeap) {
+            this->onHeap = onHeap;
+        }
     private:
         Coordinate* coordinate;
+        Vertex* father;
+        double key;
+        bool onHeap;
 };
 
 class Case {
@@ -59,8 +84,8 @@ class Case {
 class NetworkStructure {
     public:
         NetworkStructure() {
-            this->twistedPairSize = 0;
-            this->opticalFiberSize = 0;
+            this->twistedPairSize = 0.0;
+            this->opticalFiberSize = 0.0;
         }
         void addTwistedPair(double twistedPairSize) {
             this->twistedPairSize += twistedPairSize;
@@ -81,17 +106,19 @@ class NetworkStructure {
 
 vector<Case*> readInput();
 void printInput(vector<Case*> cases);
+NetworkStructure minimumCableConfiguration(Case* networkCase);
 
 int main() {
     vector<Case*> cases = readInput();
 
-    //NetworkStructure minimum-spanning-tree(Case* networkCase);
-    //for (vector<Case*>::iterator it = cases.begin(); it != cases.end(); it++) {
-    //    Case* currentCase = *it;
-    //    NetworkStructure ns = minimum-spanning-tree(currentCase);
-    //}
+    for (vector<Case*>::iterator it = cases.begin(); it != cases.end(); it++) {
+        Case* currentCase = *it;
+        NetworkStructure ns = minimumCableConfiguration(currentCase);
+        cout << round(ns.getTwistedPairSize()) << " " 
+                        << round(ns.getOpticalFiberSize()) << "\n";
+    }
 
-    printInput(cases);
+    //printInput(cases);
 
     return 0;
 }
@@ -152,3 +179,45 @@ double weight(Vertex* u, Vertex* v) {
 
     return sqrt(cat1*cat1 + cat2*cat2);
 }
+
+NetworkStructure minimumCableConfiguration(Case* networkCase) {
+    vector<Vertex*> vertexes = networkCase->getVertexes();
+    //Vertex* root = vertexes.at(0);
+    //minimumSpawningTree(graph, root);
+
+    NetworkStructure structure;
+    for (vector<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
+        Vertex* vertex = *it;
+        if(vertex->getFather() != NULL) {
+            double edgeWeight = vertex->getKey();
+            if(edgeWeight > networkCase->getTwistedPairMaxDistance()) {
+                structure.addOpticalFiber(edgeWeight);
+            } else {
+                structure.addTwistedPair(edgeWeight);
+            }
+        }
+    }
+
+    return structure;
+}
+
+//void minimumSpawningTree(Case* graph, Vertex* root) {
+//    root->setKey(0);
+//    Heap heap = new FibonacciHeap(graph->getVertexes());
+//    while(!heap.isEmpty()) {
+//        Vertex* u = heap.extractMin();
+//        u->setOnHeap(false);
+//
+//        for (vector<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
+//            Vertex* vertex = *it;
+//
+//            double edgeWeight = weight(u, vertex);
+//            if(vertex != u && vertex->isOnHeap() && edgeWeight < vertex->getKey()) {
+//                vertex->setFather(u);
+//                vertex->setKey(edgeWeight);
+//                heap.reorganize(vertex);
+//            }
+//        }
+//    }
+//}
+
