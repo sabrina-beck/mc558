@@ -136,7 +136,6 @@ class MinHeap {
         int father(int i);
         int right(int i);
         int left(int i);
-        void print();
         int size;
         Vertex** vertexes;
 };
@@ -278,45 +277,6 @@ MinHeap::MinHeap(Vertex** vertexes, int size) {
 
 MinHeap::~MinHeap() {
     free(this->vertexes);
-}
-
-void MinHeap::print() {
-    bool invalid = false;
-    for(int i = 0; i < this->size; i++) {
-        int left = this->left(i);
-        if(left < this->size && this->vertexes[i]->getKey() > this->vertexes[left]->getKey()) {
-            invalid = true;
-            cout << "INVALID i: " << i << " left child: " << left << "\n";
-        }
-
-        int right = this->right(i);
-        if(right < this->size && this->vertexes[i]->getKey() > this->vertexes[right]->getKey()) {
-            invalid = true;
-            cout << "INVALID i: " << i << " right child: " << right << "\n";
-        }
-
-        if(this->vertexes[i]->getIndex() != i) {
-            invalid = true;
-            cout << "INVALID i: " << i << " index: " << this->vertexes[i]->getIndex() << "\n";
-        }
-    }
-
-    if(invalid) {
-        cout << "\tPrinting INVALID heap: \n";
-        for(int i = 0; i < this->size; i++) {
-            cout << "\t\tindex: " << i << ", node: " << this->vertexes[i]->getKey() << "\n";
-            
-            int left = this->left(i);
-            if(left < this->size) {
-                cout << "\t\t\tleft: " << this->vertexes[left]->getKey() << "\n";
-            }
-    
-            int right = this->right(i);
-            if(right < this->size) {
-                cout << "\t\t\tright: " << this->vertexes[right]->getKey() << "\n";
-            }
-        }
-    }
 }
 
 int MinHeap::father(int i) {
