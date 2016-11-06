@@ -132,15 +132,12 @@ class MinHeap {
         int right(int i);
         /* considering the node in the index i, calculates the index of the node's left child, considering that the array is a tree */
         int left(int i);
-        /* debugging function, prints the heap */
-        void print();
 
         int size;                  // the heap size
         vector<Vertex*> vertexes;  // the vertexes array
 };
 
 vector<Race> read();
-void print(vector<Race> races);
 int maximumPrizeCrazyRace(Race race);
 
 int main() {
@@ -195,24 +192,6 @@ vector<Race> read() {
     }
 
     return races;    
-}
-
-void print(vector<Race> races) {
-    cout << races.size() << "\n";
-
-    for(unsigned int i = 0; i < races.size(); i++) {
-        Race race = races.at(i);
-        Graph* graph = race.graph;
-        cout << graph->getNumberOfVertexes() << " ";
-        cout << graph->getNumberOfEdges() << " ";
-        cout << race.origin << " " << race.destiny << " ";
-        cout << race.limitOfPoints << "\n";
-
-        for(int j = 0; j < graph->getNumberOfEdges(); j++) {
-            Edge* edge = graph->getEdges().at(j);
-            cout << edge->origin->id << " " << edge->destiny->id << " " << edge->weight << "\n";
-        }
-    }
 }
 
 /*
@@ -476,45 +455,4 @@ void MinHeap::decreaseKey(Vertex* vertex, double key) {
         i = this->father(i);
     }
 
-}
-
-void MinHeap::print() {
-    bool invalid = false;
-    for(int i = 0; i < this->size; i++) {
-        int left = this->left(i);
-        if(left < this->size && this->vertexes.at(i)->distance > this->vertexes.at(left)->distance) {
-            invalid = true;
-            cout << "INVALID i: " << i << " left child: " << left << "\n";
-        }
-
-        int right = this->right(i);
-        if(right < this->size && this->vertexes.at(i)->distance > this->vertexes.at(right)->distance) {
-            invalid = true;
-            cout << "INVALID i: " << i << " right child: " << right << "\n";
-        }
-
-        if(this->vertexes.at(i)->index != i) {
-            invalid = true;
-            cout << "INVALID i: " << i << " index: " << this->vertexes.at(i)->index << "\n";
-        }
-    }
-
-    if(invalid) {
-        cout << "\tPrinting INVALID heap: \n";
-        for(int i = 0; i < this->size; i++) {
-            cout << "\t\tindex: " << i << ", node: " << this->vertexes.at(i)->id << " distance: " << this->vertexes.at(i)->distance << "\n";
-            
-            int left = this->left(i);
-            if(left < this->size) {
-                cout << "\t\t\tleft: " << this->vertexes.at(left)->id << " distance: "  << this->vertexes.at(left)->distance << "\n";
-            }
-    
-            int right = this->right(i);
-            if(right < this->size) {
-                cout << "\t\t\tright: " << this->vertexes.at(right)->id << " distance: "  << this->vertexes.at(right)->distance << "\n";
-            }
-        }
-
-        exit(1);
-    }
 }
