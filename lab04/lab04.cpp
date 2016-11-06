@@ -287,16 +287,11 @@ int maximumPrizeCrazyRace(Race race) {
     // and find the minimum distance from each vertex from the race destiny
     dijkstra(inverted, race.destiny);
 
-    // then we sort in descending order both graphs edges
-    vector<Edge*> edges = race.graph->getEdges();
-    sort(edges.begin(), edges.end(), compareEdgesDesc);
-    vector<Edge*> invertedEdges = inverted->getEdges();
-    sort(invertedEdges.begin(), invertedEdges.end(), compareEdgesDesc);
-
     // search for the maximum prize, the haevier edge will be evaluated before
+    int max = -1;
     for(int i = 0; i < race.graph->getNumberOfEdges(); i++) {
-        Edge* edge = edges.at(i);
-        Edge* invertedEdge = invertedEdges.at(i);
+        Edge* edge = race.graph->getEdges().at(i);
+        Edge* invertedEdge = inverted->getEdges().at(i);
 
         // if the edge can't be reached from the origin and arrive to the destiny
         // so it is not considered
@@ -309,11 +304,13 @@ int maximumPrizeCrazyRace(Race race) {
         // and the minimum distance of v from the race destiny
         int points = edge->origin->distance + edge->weight + invertedEdge->origin->distance;
         if(points <= race.limitOfPoints){
-            return edge->weight;
+            if(edge->weight > max) {
+                max = edge->weight;
+            }
         }
     }
 
-    return -1;
+    return max;
 }
 
 /*
