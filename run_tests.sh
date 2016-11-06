@@ -65,7 +65,7 @@ if g++ -ansi -pedantic -Wall -lm $labFolder/*.cpp -o $packagesFolder/lab$labNumb
             echo "test $testName: correct"
         else
             echo "test $testName: incorrect"
-            diff $testsFolder/$testName.res $testsFolder/$testName.out
+            #diff $testsFolder/$testName.res $testsFolder/$testName.out
         fi
     done
 fi
