@@ -535,7 +535,13 @@ int galleryProblem(Gallery gallery) {
     Graph* graph = createGraphFrom(gallery);
     partitionGraph(graph);
     FluxNetwork fluxNetwork = createFluxNetwork(graph);
+
     int maxFlow = fordFulkersonMaxFlow(fluxNetwork);
     int numberOfAlphaSectors = graph->getVertexes().size() - 2;
-    return numberOfAlphaSectors - maxFlow;
+
+    int m = numberOfAlphaSectors - 2*maxFlow;
+    cout << "m: " << m << "\n";
+    int n = maxFlow;
+    cout << "n: " << n << "\n";
+    return m + n;
 }
