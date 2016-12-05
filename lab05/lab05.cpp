@@ -141,11 +141,11 @@ int galleryProblem(Gallery gallery);
 int main() {
     Instancies instancies = readGalleries();
 
-    //for (int i = 0; i < instancies.size; i++) {
-        Gallery gallery = instancies.galleries[0];
+    for (int i = 0; i < instancies.size; i++) {
+        Gallery gallery = instancies.galleries[i];
         int numberOfGuards = galleryProblem(gallery);
         cout << numberOfGuards << "\n";
-    //}
+    }
     return 0;
 }
 
@@ -535,5 +535,7 @@ int galleryProblem(Gallery gallery) {
     Graph* graph = createGraphFrom(gallery);
     partitionGraph(graph);
     FluxNetwork fluxNetwork = createFluxNetwork(graph);
-    return fordFulkersonMaxFlow(fluxNetwork);
+    int maxFlow = fordFulkersonMaxFlow(fluxNetwork);
+    int numberOfAlphaSectors = graph->getVertexes().size() - 2;
+    return numberOfAlphaSectors - maxFlow;
 }
