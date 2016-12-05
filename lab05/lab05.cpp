@@ -319,8 +319,8 @@ FluxNetwork createFluxNetwork(Graph* graph) {
     source->adjacencies = new list<Edge*>();
 
     Vertex* terminal = new Vertex();
-    terminal->coordinate.line = -1;
-    terminal->coordinate.column = -1;
+    terminal->coordinate.line = -2;
+    terminal->coordinate.column = -2;
     terminal->adjacencies = new list<Edge*>();
 
     list<Vertex*> vertexes = graph->getVertexes();
@@ -353,16 +353,43 @@ FluxNetwork createFluxNetwork(Graph* graph) {
     return fluxNetwork;
 }
 
+void print(Coordinate coord) {
+    cout << "(" << coord.line << ", " << coord.column << ")";
+}
+
+void print(Graph* graph) {
+    list<Vertex*> vertexes = graph->getVertexes();
+    for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
+        Vertex* vertex = *it;
+        for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
+            Edge* edge = *it2;
+            print(edge->origin->coordinate);
+            cout << " <> ";
+            print(edge->destiny->coordinate);
+            cout << "\n";
+        }
+    }
+}
+
+void print(list<Vertex*> vertexes) {
+    for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
+        Vertex* vertex = *it;
+        print(vertex->coordinate);
+        cout << " >> adjacencies: " << vertex->adjacencies->size() << "\n";
+    }
+}
+
 FluxNetwork buildResidualNetwork(FluxNetwork fluxNetwork) {
+
     Graph* residual = new Graph();
  
     list<Vertex*> vertexes = fluxNetwork.graph->getVertexes();
+print(fluxNetwork.graph);
+cout << "--------------\n";
+print(fluxNetwork.graph->getVertexes());
+cout << "--------------\n";
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
-
-        if(vertex == fluxNetwork.source || vertex == fluxNetwork.terminal) {
-            residual->addVertex(vertex);
-        }
 
         for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
             Edge* originalEdge = *it2;
@@ -380,7 +407,7 @@ FluxNetwork buildResidualNetwork(FluxNetwork fluxNetwork) {
                 residual->addEdge(origin->coordinate, destiny->coordinate,
                     weight, newFlux, inverted, originalEdge);
             }
- 
+
             if(flux > 0) {
                 int weight = flux;
                 int newFlux = 0;
@@ -396,8 +423,21 @@ FluxNetwork buildResidualNetwork(FluxNetwork fluxNetwork) {
  
     FluxNetwork residualNetwork;
     residualNetwork.graph = residual;
-    residualNetwork.source = fluxNetwork.source;
-    residualNetwork.terminal = fluxNetwork.terminal;
+
+    list<Vertex*> residualVertexes = residual->getVertexes();
+    for(list<Vertex*>::iterator it = residualVertexes.begin(); it != residualVertexes.end(); it++) {
+        Vertex* vertex = *it;
+        if(vertex->coordinate.line == fluxNetwork.source->coordinate.line &&
+            vertex->coordinate.column == fluxNetwork.source->coordinate.column) {
+            residualNetwork.source = vertex;
+        }
+
+        if(vertex->coordinate.line == fluxNetwork.terminal->coordinate.line &&
+            vertex->coordinate.column == fluxNetwork.terminal->coordinate.column) {
+            residualNetwork.terminal = vertex;
+        }
+    }
+    
     return residualNetwork;
 }
 
@@ -425,6 +465,7 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
             if(!edge->destiny->visited) {
                 edge->destiny->visited = true;
                 edge->destiny->father = vertex;
+
                 queue.push(edge->destiny);
             }
         }
@@ -475,6 +516,7 @@ int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
     }
 
     FluxNetwork residualNetwork = buildResidualNetwork(fluxNetwork);
+    print(residualNetwork.graph);
     while(hasPathBFS(residualNetwork.graph, residualNetwork.source, residualNetwork.terminal)) {
         residualNetwork = buildResidualNetwork(fluxNetwork);
     }
@@ -487,24 +529,6 @@ int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
     }
 
     return maxFlow;
-}
-
-void print(Coordinate coord) {
-    cout << "(" << coord.line << ", " << coord.column << ")";
-}
-
-void print(Graph* graph) {
-    list<Vertex*> vertexes = graph->getVertexes();
-    for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
-        Vertex* vertex = *it;
-        for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
-            Edge* edge = *it2;
-            print(edge->origin->coordinate);
-            cout << " <> ";
-            print(edge->destiny->coordinate);
-            cout << "\n";
-        }
-    }
 }
 
 int galleryProblem(Gallery gallery) {
