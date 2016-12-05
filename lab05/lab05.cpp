@@ -339,7 +339,7 @@ FluxNetwork createFluxNetwork(Graph* graph) {
             edge->origin = vertex;
             edge->destiny = terminal;
 
-            terminal->adjacencies->push_back(edge);
+            vertex->adjacencies->push_back(edge);
         }
     }
 
@@ -384,10 +384,6 @@ FluxNetwork buildResidualNetwork(FluxNetwork fluxNetwork) {
     Graph* residual = new Graph();
  
     list<Vertex*> vertexes = fluxNetwork.graph->getVertexes();
-print(fluxNetwork.graph);
-cout << "--------------\n";
-print(fluxNetwork.graph->getVertexes());
-cout << "--------------\n";
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
 
@@ -474,12 +470,13 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
     if(terminal->father != NULL) {
         list<Edge*> path;
         int cf = INT_MAX; //cf(p) = min{cf(u, v) : (u, v) está em p}
-        Vertex* current = terminal;
+
+        Vertex* previous = terminal;
+        Vertex* current = terminal->father;
         while(current != NULL) {
-            Vertex* father = current->father;
-            for(list<Edge*>::iterator it = father->adjacencies->begin(); it != father->adjacencies->end(); it++) {
+            for(list<Edge*>::iterator it = current->adjacencies->begin(); it != current->adjacencies->end(); it++) {
                 Edge* edge = *it;
-                if(edge->destiny == current) {
+                if(edge->destiny == previous) {
                     path.push_back(edge);
                     if(edge->weight < cf) {
                         cf = edge->weight;
@@ -487,7 +484,8 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
                     break;
                 }
             }
-            current = father;
+            previous = current;
+            current = current->father;
         }
         
         for(list<Edge*>::iterator it = path.begin(); it != path.end(); it++) {
@@ -505,6 +503,16 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
     return false;
 }
 
+int calculateFlux(Vertex* vertex) {
+    int flow = 0;
+    for(list<Edge*>::iterator it = vertex->adjacencies->begin(); it != vertex->adjacencies->end(); it++) {    
+        Edge* edge = *it;
+        flow += edge->flux;
+    }
+
+    return flow;
+}
+
 int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
     list<Vertex*> vertexes = fluxNetwork.graph->getVertexes();
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
@@ -516,19 +524,11 @@ int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
     }
 
     FluxNetwork residualNetwork = buildResidualNetwork(fluxNetwork);
-    print(residualNetwork.graph);
     while(hasPathBFS(residualNetwork.graph, residualNetwork.source, residualNetwork.terminal)) {
         residualNetwork = buildResidualNetwork(fluxNetwork);
     }
 
-    Vertex* source = fluxNetwork.source;
-    int maxFlow = 0;
-    for(list<Edge*>::iterator it = source->adjacencies->begin(); it != source->adjacencies->end(); it++) {    
-        Edge* edge = *it;
-        maxFlow += edge->flux;
-    }
-
-    return maxFlow;
+    return calculateFlux(fluxNetwork.source);
 }
 
 int galleryProblem(Gallery gallery) {
