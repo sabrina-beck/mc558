@@ -20,7 +20,7 @@ typedef struct Coordinate {
 typedef struct Vertex {
     Coordinate coordinate;
     Color color;
-    list<struct Edge*> adjacencies;
+    list<struct Edge*>* adjacencies;
 
     int distance;       // the distance of the vertex from the origin vertex, used in dijkstra
     Vertex* father;     // the vertex predecessor in the minimum path from the origin vertex, used in dijkstra
@@ -79,6 +79,7 @@ class Graph {
                 origin->coordinate = originCoord;
                 origin->distance = INT_MAX;
                 origin->father = NULL;
+                origin->adjacencies = new list<Edge*>();
                 this->vertexes.push_back(origin);
             }
 
@@ -87,6 +88,7 @@ class Graph {
                 destiny->coordinate = destinyCoord;
                 destiny->distance = INT_MAX;
                 destiny->father = NULL;
+                destiny->adjacencies = new list<Edge*>();
                 this->vertexes.push_back(destiny);
             }
 
@@ -99,7 +101,7 @@ class Graph {
             edge->destiny = destiny;
 
             // add the edge to its origin vertex adjacencies
-            origin->adjacencies.push_back(edge);
+            origin->adjacencies->push_back(edge);
         }
 
         int getNumberOfVertexes() {
@@ -251,8 +253,7 @@ Graph* createGraphFrom(Gallery gallery) {
 }
 
 void remove(Vertex* origin, Vertex* destiny) {
-    list<Edge*>* edges = &origin->adjacencies;
-    cout << "[DEBUG] size: " << edges->size() << "\n";
+    list<Edge*>* edges = origin->adjacencies;
     for(list<Edge*>::iterator it = edges->begin(); it != edges->end();) {
         Edge* oppositeEdge = *it;
         if(oppositeEdge->destiny == destiny) {
@@ -261,7 +262,6 @@ void remove(Vertex* origin, Vertex* destiny) {
             it++;
         }
     }
-    cout << "[DEBUG] size: " << edges->size() << "\n";
 }
 
 void partitionGraph(Graph* graph, Vertex* source) {
@@ -274,22 +274,18 @@ void partitionGraph(Graph* graph, Vertex* source) {
         Vertex* u = queue.front();
         queue.pop();
 
-        for(list<Edge*>::iterator it = u->adjacencies.begin(); it != u->adjacencies.end(); it++) {
+        for(list<Edge*>::iterator it = u->adjacencies->begin(); it != u->adjacencies->end(); it++) {
             Edge* edge = *it;
             Vertex* v = edge->destiny;
             if(v->color == WHITE) {
                 if(u->color == BLUE) {
                     v->color = RED;
                     //remove (v,u) edge
-                    cout << "[DEBUG11] size: " << v->adjacencies.size() << "\n";
                     remove(v, u);
-                    cout << "[DEBUG11] size: " << v->adjacencies.size() << "\n";
                 } else {
                     v->color = BLUE;
                     //remove (u, v) edge
-                    cout << "[DEBUG11] size: " << u->adjacencies.size() << "\n";
-                    remove(u, v);
-                    cout << "[DEBUG11] size: " << u->adjacencies.size() << "\n";
+                    it = u->adjacencies->erase(it);
                 }
                 queue.push(v);
             } else if(v->color == u->color) {
@@ -310,7 +306,6 @@ void partitionGraph(Graph* graph) {
 
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
-
         if(vertex->color == WHITE) {
             partitionGraph(graph, vertex);
         }
@@ -321,10 +316,12 @@ FluxNetwork createFluxNetwork(Graph* graph) {
     Vertex* source = new Vertex();
     source->coordinate.line = -1;
     source->coordinate.column = -1;
+    source->adjacencies = new list<Edge*>();
 
     Vertex* terminal = new Vertex();
     terminal->coordinate.line = -1;
     terminal->coordinate.column = -1;
+    terminal->adjacencies = new list<Edge*>();
 
     list<Vertex*> vertexes = graph->getVertexes();
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
@@ -335,14 +332,14 @@ FluxNetwork createFluxNetwork(Graph* graph) {
             edge->origin = source;
             edge->destiny = vertex;
 
-            source->adjacencies.push_back(edge);
+            source->adjacencies->push_back(edge);
         } else {
             Edge* edge = new Edge();
             edge->weight = 1;
             edge->origin = vertex;
             edge->destiny = terminal;
 
-            terminal->adjacencies.push_back(edge);
+            terminal->adjacencies->push_back(edge);
         }
     }
 
@@ -367,7 +364,7 @@ FluxNetwork buildResidualNetwork(FluxNetwork fluxNetwork) {
             residual->addVertex(vertex);
         }
 
-        for(list<Edge*>::iterator it2 = vertex->adjacencies.begin(); it2 != vertex->adjacencies.end(); it2++) {
+        for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
             Edge* originalEdge = *it2;
 
             int capacity = originalEdge->weight;
@@ -423,7 +420,7 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
         Vertex* vertex = queue.front();
         queue.pop();
 
-        for(list<Edge*>::iterator it = vertex->adjacencies.begin(); it != vertex->adjacencies.end(); it++) {
+        for(list<Edge*>::iterator it = vertex->adjacencies->begin(); it != vertex->adjacencies->end(); it++) {
             Edge* edge = *it;
             if(!edge->destiny->visited) {
                 edge->destiny->visited = true;
@@ -439,7 +436,7 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
         Vertex* current = terminal;
         while(current != NULL) {
             Vertex* father = current->father;
-            for(list<Edge*>::iterator it = father->adjacencies.begin(); it != father->adjacencies.end(); it++) {
+            for(list<Edge*>::iterator it = father->adjacencies->begin(); it != father->adjacencies->end(); it++) {
                 Edge* edge = *it;
                 if(edge->destiny == current) {
                     path.push_back(edge);
@@ -471,7 +468,7 @@ int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
     list<Vertex*> vertexes = fluxNetwork.graph->getVertexes();
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
-        for(list<Edge*>::iterator it2 = vertex->adjacencies.begin(); it2 != vertex->adjacencies.end(); it2++) {
+        for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
             Edge* edge = *it2;
             edge->flux = 0;
         }
@@ -484,7 +481,7 @@ int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
 
     Vertex* source = fluxNetwork.source;
     int maxFlow = 0;
-    for(list<Edge*>::iterator it = source->adjacencies.begin(); it != source->adjacencies.end(); it++) {    
+    for(list<Edge*>::iterator it = source->adjacencies->begin(); it != source->adjacencies->end(); it++) {    
         Edge* edge = *it;
         maxFlow += edge->flux;
     }
@@ -500,7 +497,7 @@ void print(Graph* graph) {
     list<Vertex*> vertexes = graph->getVertexes();
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
-        for(list<Edge*>::iterator it2 = vertex->adjacencies.begin(); it2 != vertex->adjacencies.end(); it2++) {
+        for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
             Edge* edge = *it2;
             print(edge->origin->coordinate);
             cout << " <> ";
@@ -513,8 +510,6 @@ void print(Graph* graph) {
 int galleryProblem(Gallery gallery) {
     Graph* graph = createGraphFrom(gallery);
     partitionGraph(graph);
-    print(graph);
-    //FluxNetwork fluxNetwork = createFluxNetwork(graph);
-    //return fordFulkersonMaxFlow(fluxNetwork);
-    return 0;
+    FluxNetwork fluxNetwork = createFluxNetwork(graph);
+    return fordFulkersonMaxFlow(fluxNetwork);
 }
