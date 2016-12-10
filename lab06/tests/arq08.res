@@ -1,0 +1,500 @@
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+20264.6600
+Escalonamento impossivel
+Escalonamento impossivel
+15396.7600
+Escalonamento impossivel
+20354.7500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+24599.7100
+21207.9600
+23076.0400
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+19303.8800
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+15840.9600
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+11198.7800
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+27267.3400
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+25713.2900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+21545.8500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+19834.3300
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+14814.6100
+17035.6200
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+15547.1700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+17299.5400
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+18439.6000
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+19517.1900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+28678.1200
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+22728.4500
+14976.0000
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+18100.9300
+Escalonamento impossivel
+17815.7100
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+15833.7300
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+24314.7300
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+23339.0900
+17305.5400
+7751.7700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+23328.6900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+11922.2900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+17512.7300
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+17278.7500
+14858.1300
+22078.8700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+16320.2700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+27554.3500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+11447.0700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+19783.6500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+16416.1500
+Escalonamento impossivel
+26626.5900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+19975.0900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+15127.2500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+16246.5700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+21899.7500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+15279.0100
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+21468.7400
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+16617.8100
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+18412.5400
+Escalonamento impossivel
+23184.5600
+Escalonamento impossivel
+10079.3700
+14450.4500
+Escalonamento impossivel
+28521.2000
+Escalonamento impossivel
+21871.8000
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+6457.0900
+16540.7500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+15962.1700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+20268.6500
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+18108.4600
+Escalonamento impossivel
+Escalonamento impossivel
+25094.7700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+21407.3600
+Escalonamento impossivel
+Escalonamento impossivel
+20807.0900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+26584.9000
+Escalonamento impossivel
+Escalonamento impossivel
+30230.1400
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+12012.9700
+Escalonamento impossivel
+20429.7200
+Escalonamento impossivel
+Escalonamento impossivel
+15318.8000
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+8045.1700
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+23581.1100
+Escalonamento impossivel
+20259.8600
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+18207.0400
+Escalonamento impossivel
+Escalonamento impossivel
+20574.4600
+20856.5400
+Escalonamento impossivel
+27048.4000
+Escalonamento impossivel
+Escalonamento impossivel
+12966.7800
+14803.5300
+25194.4900
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
+Escalonamento impossivel
