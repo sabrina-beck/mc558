@@ -7,72 +7,29 @@
 using namespace lemon;
 using namespace std;
 
+/*
+ * Represents the Chell problem
+ */
+typedef struct {
+    double maxMonthProduction[NUMBER_OF_MONTHS];    // maximum amount of liters of beverage that chell can produce no ith month
+    double whiskeyDemand[NUMBER_OF_MONTHS];         // demand in liters of whiskey in the i th month
+    double vodkaDemand[NUMBER_OF_MONTHS];           // demand in liters of vodka in the i th month
+    double whiskeyCost[NUMBER_OF_MONTHS];           // cost of manufacturing whiskey in reais per liter in the i th month
+    double vodkaCost[NUMBER_OF_MONTHS];             // cost of manufacturing vodka in reais per liter in the i th month
+    double storageCapacity;                         // maximum storage capacity, in liters, of beverage that Chell can make
+    double storageCost;                             // cost, in reais, of storage per month per liter
+} ChellProblem;
+
+ChellProblem read();
+Lp buildLinearProblem(ChellProblem problem);
+
 int main(int argc, const char *argv[]) {
     int t;
     cin >> t;
 
     for(int index = 0; index < t; index++) {
-        Lp lp;
-        double p[NUMBER_OF_MONTHS], x[NUMBER_OF_MONTHS], y[NUMBER_OF_MONTHS];
-        double a[NUMBER_OF_MONTHS], b[NUMBER_OF_MONTHS];
-        double A;
-        double k;
-
-        cin >> A >> k;
-        for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
-            cin >> x[i];
-        }
-
-        for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
-            cin >> y[i];
-        }
-
-        for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
-            cin >> a[i];
-        }
-
-        for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
-            cin >> b[i];
-        }
-
-        for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
-            cin >> p[i];
-        }
-
-        std::vector<Lp::Col> u(NUMBER_OF_MONTHS);
-        std::vector<Lp::Col> v(NUMBER_OF_MONTHS);
-        std::vector<Lp::Col> t(NUMBER_OF_MONTHS);
-        std::vector<Lp::Col> w(NUMBER_OF_MONTHS);
-        Lp::Expr obj;
-
-        lp.addColSet(u);
-        lp.addColSet(v);
-        lp.addColSet(t);
-        lp.addColSet(w);
-
-        lp.colLowerBound(u, 0);
-        lp.colLowerBound(v, 0);
-        lp.colLowerBound(t, 0);
-        lp.colLowerBound(w, 0);
-
-        for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
-
-            lp.addRow(u[i] + v[i] <= p[i]);
-            lp.addRow(t[i] + w[i] <= A);
-
-            if(i == 0) {
-                lp.addRow(t[i] == u[i] - x[i]);
-                lp.addRow(w[i] == v[i] - y[i]);
-            } else {
-                lp.addRow(t[i] == (u[i] + t[i-1]) - x[i]);
-                lp.addRow(w[i] == (v[i] + w[i-1]) - y[i]);
-            }
-
-            obj += a[i] * u[i] + b[i] * v[i] + t[i] * k + w[i] * k;
-        }
-
-        lp.min();
-        lp.obj(obj);
+        ChellProblem problem = read();
+        Lp lp = buildLinearProblem(problem);
         lp.solve();
         
         if (lp.primalType() == Lp::OPTIMAL) {
@@ -84,4 +41,80 @@ int main(int argc, const char *argv[]) {
     }
 
     return 0;
+}
+
+ChellProblem read() {
+    ChellProblem problem;
+
+    cin >> problem.storageCapacity >> problem.storageCost;
+    for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
+        cin >> problem.whiskeyDemand[i];
+    }
+
+    for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
+        cin >> problem.vodkaDemand[i];
+    }
+
+    for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
+        cin >> problem.whiskeyCost[i];
+    }
+
+    for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
+        cin >> problem.vodkaCost[i];
+    }
+
+    for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
+        cin >> problem.maxMonthProduction[i];
+    }
+
+    return problem;
+}
+
+Lp buildLinearProblem(ChellProblem problem) {
+    Lp lp;
+
+    std::vector<Lp::Col> producedWhiskey(NUMBER_OF_MONTHS);
+    std::vector<Lp::Col> producedVodka(NUMBER_OF_MONTHS);
+    std::vector<Lp::Col> whiskeyInStock(NUMBER_OF_MONTHS);
+    std::vector<Lp::Col> vodkaInStock(NUMBER_OF_MONTHS);
+    Lp::Expr obj;
+
+    // setup
+    lp.addColSet(producedWhiskey);
+    lp.addColSet(producedVodka);
+    lp.addColSet(whiskeyInStock);
+    lp.addColSet(vodkaInStock);
+
+    // non negativity restriction
+    lp.colLowerBound(producedWhiskey, 0);
+    lp.colLowerBound(producedVodka, 0);
+    lp.colLowerBound(whiskeyInStock, 0);
+    lp.colLowerBound(vodkaInStock, 0);
+
+    for(int i = 0; i < NUMBER_OF_MONTHS; i++) {
+
+        // maximum month production restriction
+        lp.addRow(producedWhiskey[i] + producedVodka[i] <= problem.maxMonthProduction[i]);
+        // storage capacity restriction
+        lp.addRow(whiskeyInStock[i] + vodkaInStock[i] <= problem.storageCapacity);
+
+        if(i == 0) {
+            // first month stock amount restriction
+            lp.addRow(whiskeyInStock[i] == producedWhiskey[i] - problem.whiskeyDemand[i]);
+            lp.addRow(vodkaInStock[i] == producedVodka[i] - problem.vodkaDemand[i]);
+        } else {
+            // stock amount restriction
+            lp.addRow(whiskeyInStock[i] == (producedWhiskey[i] + whiskeyInStock[i-1]) - problem.whiskeyDemand[i]);
+            lp.addRow(vodkaInStock[i] == (producedVodka[i] + vodkaInStock[i-1]) - problem.vodkaDemand[i]);
+        }
+
+        // total cost for objective function
+        obj += problem.whiskeyCost[i] * producedWhiskey[i] + problem.vodkaCost[i] * producedVodka[i]
+                                        + whiskeyInStock[i] * problem.storageCost + vodkaInStock[i] * problem.storageCost;
+    }
+
+    lp.min();
+    lp.obj(obj);
+
+    return lp;
 }
