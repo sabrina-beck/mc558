@@ -53,44 +53,36 @@ class Graph {
             this->vertexes.push_back(vertex);
         }
 
+        Vertex* getOrAddVertex(Coordinate coord) {
+            Vertex* newVertex = NULL;
+            
+            for(list<Vertex*>::iterator it = this->vertexes.begin(); it != this->vertexes.end(); it++) {
+                Vertex* vertex = *it;
+                if(vertex->coordinate.line == coord.line &&
+                    vertex->coordinate.column == coord.column) {
+                    newVertex = vertex;
+                }             
+            }
+
+            if(newVertex == NULL) {
+                newVertex = new Vertex();
+                newVertex->coordinate = coord;
+                newVertex->distance = INT_MAX;
+                newVertex->father = NULL;
+                newVertex->adjacencies = new list<Edge*>();
+                this->vertexes.push_back(newVertex);
+            }
+
+            return newVertex;
+        }
+
         /*
          * Add a new edge to the graph that goes from originId to destinyId
          */
         void addEdge(Coordinate originCoord, Coordinate destinyCoord, int weight,
                      int flux, bool inverted, Edge* originalEdge) {
-            Vertex* origin = NULL;
-            Vertex* destiny = NULL;
-
-            for(list<Vertex*>::iterator it = this->vertexes.begin(); it != this->vertexes.end(); it++) {
-                Vertex* vertex = *it;
-                if(vertex->coordinate.line == originCoord.line &&
-                    vertex->coordinate.column == originCoord.column) {
-                    origin = vertex;
-                }
-
-                if(vertex->coordinate.line == destinyCoord.line &&
-                    vertex->coordinate.column == destinyCoord.column) {
-                    destiny = vertex;
-                }                
-            }
-
-            if(origin == NULL) {
-                origin = new Vertex();
-                origin->coordinate = originCoord;
-                origin->distance = INT_MAX;
-                origin->father = NULL;
-                origin->adjacencies = new list<Edge*>();
-                this->vertexes.push_back(origin);
-            }
-
-            if(destiny == NULL) {
-                destiny = new Vertex();
-                destiny->coordinate = destinyCoord;
-                destiny->distance = INT_MAX;
-                destiny->father = NULL;
-                destiny->adjacencies = new list<Edge*>();
-                this->vertexes.push_back(destiny);
-            }
+            Vertex* origin = getOrAddVertex(originCoord);
+            Vertex* destiny = getOrAddVertex(destinyCoord);
 
             Edge* edge = new Edge;
             edge->weight = weight;
@@ -140,6 +132,7 @@ int galleryProblem(Gallery gallery);
 
 int main() {
     Instancies instancies = readGalleries();
+    //print(instancies);
 
     for (int i = 0; i < instancies.size; i++) {
         Gallery gallery = instancies.galleries[i];
@@ -186,7 +179,8 @@ Instancies readGalleries() {
 
 void print(Instancies instancies) {
     cout << instancies.size << "\n";
-    for(int i = 0; i < instancies.size; i++) {
+    //for(int i = 0; i < instancies.size; i++) {
+    int i = 102;
         Gallery gallery = instancies.galleries[i];
         cout << gallery.lines << " " << gallery.columns << "\n";
 
@@ -200,7 +194,7 @@ void print(Instancies instancies) {
             }
             cout << "\n";
         }
-    }
+    //}
 }
 
 Graph* createGraphFrom(Gallery gallery) {
@@ -211,6 +205,8 @@ Graph* createGraphFrom(Gallery gallery) {
                 Coordinate coord1;
                 coord1.line = i;
                 coord1.column = j;
+
+                graph->getOrAddVertex(coord1);
 
                 if(i+1 < gallery.lines && gallery.map[i+1][j] == 1) {
                     Coordinate coord2;
@@ -286,6 +282,7 @@ void partitionGraph(Graph* graph, Vertex* source) {
                     v->color = BLUE;
                     //remove (u, v) edge
                     it = u->adjacencies->erase(it);
+                    it--;
                 }
                 queue.push(v);
             } else if(v->color == u->color) {
@@ -361,13 +358,17 @@ void print(Graph* graph) {
     list<Vertex*> vertexes = graph->getVertexes();
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
+        print(vertex->coordinate);
+        cout << "\n";
         for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
             Edge* edge = *it2;
+            cout << "\t";
             print(edge->origin->coordinate);
             cout << " <> ";
             print(edge->destiny->coordinate);
             cout << "\n";
         }
+        cout << "\n";
     }
 }
 
@@ -386,6 +387,7 @@ FluxNetwork buildResidualNetwork(FluxNetwork fluxNetwork) {
     list<Vertex*> vertexes = fluxNetwork.graph->getVertexes();
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
+        residual->getOrAddVertex(vertex->coordinate);
 
         for(list<Edge*>::iterator it2 = vertex->adjacencies->begin(); it2 != vertex->adjacencies->end(); it2++) {
             Edge* originalEdge = *it2;
@@ -442,6 +444,7 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
     for(list<Vertex*>::iterator it = vertexes.begin(); it != vertexes.end(); it++) {
         Vertex* vertex = *it;
         vertex->visited = false;
+        vertex->distance = INT_MAX;
         vertex->father = NULL;
     }
 
@@ -460,17 +463,19 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
             Edge* edge = *it;
             if(!edge->destiny->visited) {
                 edge->destiny->visited = true;
+                edge->destiny->distance = vertex->distance + 1;
                 edge->destiny->father = vertex;
-
                 queue.push(edge->destiny);
+            } else if(edge->destiny->distance > vertex->distance + 1){
+                edge->destiny->distance = vertex->distance + 1;
+                edge->destiny->father = vertex;
             }
         }
     }
 
-    if(terminal->father != NULL) {
+    if(terminal != NULL && terminal->father != NULL) {
         list<Edge*> path;
         int cf = INT_MAX; //cf(p) = min{cf(u, v) : (u, v) está em p}
-
         Vertex* previous = terminal;
         Vertex* current = terminal->father;
         while(current != NULL) {
@@ -481,13 +486,12 @@ bool hasPathBFS(Graph* residual, Vertex* source, Vertex* terminal) {
                     if(edge->weight < cf) {
                         cf = edge->weight;
                     }
-                    break;
                 }
             }
             previous = current;
             current = current->father;
         }
-        
+
         for(list<Edge*>::iterator it = path.begin(); it != path.end(); it++) {
             Edge* edge = *it;
             if(!edge->inverted) {
@@ -527,7 +531,6 @@ int fordFulkersonMaxFlow(FluxNetwork fluxNetwork) {
     while(hasPathBFS(residualNetwork.graph, residualNetwork.source, residualNetwork.terminal)) {
         residualNetwork = buildResidualNetwork(fluxNetwork);
     }
-
     return calculateFlux(fluxNetwork.source);
 }
 
@@ -539,9 +542,5 @@ int galleryProblem(Gallery gallery) {
     int maxFlow = fordFulkersonMaxFlow(fluxNetwork);
     int numberOfAlphaSectors = graph->getVertexes().size() - 2;
 
-    int m = numberOfAlphaSectors - 2*maxFlow;
-    cout << "m: " << m << "\n";
-    int n = maxFlow;
-    cout << "n: " << n << "\n";
-    return m + n;
+    return numberOfAlphaSectors - maxFlow;
 }
